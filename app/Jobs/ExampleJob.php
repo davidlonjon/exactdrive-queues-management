@@ -4,14 +4,16 @@ namespace App\Jobs;
 
 class ExampleJob extends Job
 {
+
+    private $object;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($object)
     {
-        //
+        $this->object = $object;
     }
 
     /**
@@ -21,6 +23,9 @@ class ExampleJob extends Job
      */
     public function handle()
     {
-        //
+        // print_r($this->object);
+        // print_r("hello");
+
+
     }
 }
