@@ -4,9 +4,41 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "761eaad68588e05cf92731f5836db837",
-    "content-hash": "634229a92cd452d17d5fe28938bc6da5",
+    "hash": "eb8756039564a0a4cb84eb63a84b3a2f",
+    "content-hash": "f9e4cb98955cc72f4b947500ef9f87be",
     "packages": [
+        {
+            "name": "davidlonjon/laravel-queue-rackspace-cloud",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/davidlonjon/laravel-queue-rackspace-cloud.git",
+                "reference": "0e139a621e59d65064a7e95e85cacb9ec011d585"
+            },
+            "require": {
+                "illuminate/queue": "5.2.*",
+                "illuminate/support": "5.2.*",
+                "php": ">=5.5.9",
+                "rackspace/php-opencloud": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "YonderWeb\\LaravelQueueRackspaceCloud": "src/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "David Lonjon",
+                    "email": "david.lonjon@gmail.com"
+                }
+            ],
+            "description": "RackspaceCloud driver for Laravel/Lumen Queue",
+            "time": "2016-05-16 12:28:26"
+        },
         {
             "name": "doctrine/inflector",
             "version": "v1.1.0",
@@ -3443,7 +3475,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "rackspace/php-opencloud": 20
+        "rackspace/php-opencloud": 20,
+        "davidlonjon/laravel-queue-rackspace-cloud": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

@@ -4,12 +4,20 @@
     "keywords": ["framework", "laravel", "lumen"],
     "license": "MIT",
     "type": "project",
+    "repositories": [
+        {
+            "url": "https://github.com/davidlonjon/laravel-queue-rackspace-cloud.git",
+            "type": "git"
+        }
+    ],
     "require": {
         "php": ">=5.5.9",
         "laravel/lumen-framework": "5.2.*",
         "vlucas/phpdotenv": "~2.2",
         "rackspace/php-opencloud": "dev-master",
-        "raveren/kint": "^1.0"
+        "raveren/kint": "^1.0",
+        "davidlonjon/laravel-queue-rackspace-cloud": "dev-master"
+
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
