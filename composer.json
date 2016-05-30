@@ -8,6 +8,10 @@
         {
             "url": "https://github.com/davidlonjon/laravel-queue-rackspace-cloud.git",
             "type": "git"
+        },
+        {
+            "url": "https://github.com/davidlonjon/app-nexus-sdk-php.git",
+            "type": "git"
         }
     ],
     "require": {
@@ -16,7 +20,8 @@
         "vlucas/phpdotenv": "~2.2",
         "rackspace/php-opencloud": "dev-master",
         "raveren/kint": "^1.0",
-        "davidlonjon/laravel-queue-rackspace-cloud": "dev-master"
+        "davidlonjon/laravel-queue-rackspace-cloud": "dev-master",
+        "exactdrive/app-nexus-sdk-php": "dev-master"
 
     },
     "require-dev": {
