@@ -99,4 +99,6 @@ $app->group(['namespace' => 'App\Http\Controllers'], function ($app) {
 });
 
 $app->configure('queue');
+$app->configure('appnexus');
+
 return $app;
