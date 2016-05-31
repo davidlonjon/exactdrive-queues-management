@@ -11,13 +11,7 @@
 */
 
 $app->get('/', function () use ($app) {
-    $object = [
-        'name' => 'test',
-        'time' => time()
-    ];
-
-    $job = new App\Jobs\ExampleJob($object);
-    dispatch($job);
-
     return $app->version();
 });
+
+$app->get('addAdvertiser/{id}', 'QueueController@addAdvertiser');
