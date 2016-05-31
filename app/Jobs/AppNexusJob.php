@@ -123,6 +123,7 @@ class AppNexusJob extends Job
         $userId = intval($payload['body']['data']['userId']);
 
         $user = \DB::table('users')->where('id', $userId)->first();
+        // TODO implement error when user not found
 
         $advertiserData = array(
             'name'             => $user->companyName,
@@ -157,6 +158,8 @@ class AppNexusJob extends Job
 
             $this->dispatchError($response);
         }
+
+        // TODO implement DB update error
     }
 
       /**
@@ -180,6 +183,7 @@ class AppNexusJob extends Job
         $userId = intval($payload['body']['data']['userId']);
 
         $user = \DB::table('users')->where('id', $userId)->first();
+        // TODO implement error when user not found
 
         $advertiser = (object) array();
         try {
@@ -203,5 +207,7 @@ class AppNexusJob extends Job
 
             $this->dispatchError($response);
         }
+
+        // TODO implement DB update error
     }
 }
