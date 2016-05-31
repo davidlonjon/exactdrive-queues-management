@@ -37,6 +37,19 @@ class QueueController extends Controller
         return response()->json(['status' => 'ok', 'message' => 'Request sent to queue']);
     }
 
+    public function deleteAdvertiser($userId)
+    {
+        $payload = $this->createJobCorePayload();
+        $payload['body']['action'] = 'deleteAdvertiser';
+        $payload['body']['data'] = array(
+            'userId' => intval($userId),
+        );
+
+        $this->queue->push(new AppNexusJob($payload));
+
+        return response()->json(['status' => 'ok', 'message' => 'Request sent to queue']);
+    }
+
     private function createJobCorePayload()
     {
         return array(

@@ -44,6 +44,10 @@ class AppNexusJob extends Job
                 $response = $this->addAdvertiser($this->payload);
                 break;
 
+            case 'deleteAdvertiser':
+                $response = $this->deleteAdvertiser($this->payload);
+                break;
+
             default:
                 break;
         }
@@ -143,8 +147,54 @@ class AppNexusJob extends Job
 
             $response['status'] = 'ok';
             $response['code'] = 'jobSuccessful';
-            $response['message'] = 'New advertiser added';
+            $response['message'] = 'New AppNexus advertiser added';
             $response['data'] = $advertiser;
+            return $response;
+        } catch (\Exception $e) {
+            $message = AppNexus\Api::decodeMessage($e->getMessage());
+            $response['code'] = 'advertiserAlreadyAdded';
+            $response['message'] = $message->error;
+
+            $this->dispatchError($response);
+        }
+    }
+
+      /**
+     * Job to delete a AppNexus advertiser
+     *
+     * @param  array  $payload Payload
+     *
+     * @return [type]          [description]
+     */
+    private function deleteAdvertiser($payload = array())
+    {
+        $response = $this->createCoreResponse();
+
+        if (!isset($payload['body']['data']['userId'])) {
+            $response['code'] = 'missingParameter';
+            $response['message'] = 'Missing user ID parameter';
+
+            $this->dispatchError($response);
+        }
+
+        $userId = intval($payload['body']['data']['userId']);
+
+        $user = \DB::table('users')->where('id', $userId)->first();
+
+        $advertiser = (object) array();
+        try {
+            $advertiser = AppNexus\AdvertiserService::deleteAdvertiser($user->appNexusAdvertiserID);
+            \DB::table('users')
+                        ->where('id', $userId)
+                        ->update(
+                            ['lastSyncedWithAppNexus' => date("Y-m-d H:i:s")]
+                        );
+
+            $response['status'] = 'ok';
+            $response['code'] = 'jobSuccessful';
+            $response['message'] = 'AppNexus advertiser deleted';
+            $response['data'] = $advertiser;
+
             return $response;
         } catch (\Exception $e) {
             $message = AppNexus\Api::decodeMessage($e->getMessage());
