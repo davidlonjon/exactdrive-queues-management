@@ -85,9 +85,15 @@ class AppNexusJob extends Job
      *
      * @return void
      */
-    private function dispatchError($error = array(), $die = true)
+    private function dispatchError($error = array(), $action = 'delete', $die = true)
     {
+        // TODO implement logging and or emailing
         dump($error);
+
+        // TODO // Look if job can be released
+        if ('delete' === $action) {
+            $this->delete();
+        }
         if ($die) {
             die;
         }
