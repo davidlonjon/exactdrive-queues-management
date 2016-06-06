@@ -31,15 +31,13 @@ class AdvertiserController extends Controller
      */
     public function addAdvertiser($userId)
     {
-        $payload = $this->createJobCorePayload();
-        $payload['body']['action'] = 'addAdvertiser';
-        $payload['body']['data'] = array(
-            'userId' => intval($userId),
+        $response = $this->createNewJob(
+            'AppNexusAdvertiserJob',
+            'addAdvertiser',
+            array('userId' => intval($userId))
         );
 
-        $this->queue->push(new AppNexusAdvertiserJob($payload));
-
-        return response()->json(['status' => 'ok', 'message' => 'addAdvertiser job sent to queue']);
+        return response()->json($response);
     }
 
     /**
@@ -49,15 +47,13 @@ class AdvertiserController extends Controller
      */
     public function deleteAdvertiser($userId)
     {
-        $payload = $this->createJobCorePayload();
-        $payload['body']['action'] = 'deleteAdvertiser';
-        $payload['body']['data'] = array(
-            'userId' => intval($userId),
+        $response = $this->createNewJob(
+            'AppNexusAdvertiserJob',
+            'deleteAdvertiser',
+            array('userId' => intval($userId))
         );
 
-        $this->queue->push(new AppNexusAdvertiserJob($payload));
-
-        return response()->json(['status' => 'ok', 'message' => 'deleteAdvertiser job sent to queue']);
+        return response()->json($response);
     }
 
     /**
@@ -67,14 +63,12 @@ class AdvertiserController extends Controller
      */
     public function updateAdvertiser($userId)
     {
-        $payload = $this->createJobCorePayload();
-        $payload['body']['action'] = 'updateAdvertiser';
-        $payload['body']['data'] = array(
-            'userId' => intval($userId),
+        $response = $this->createNewJob(
+            'AppNexusAdvertiserJob',
+            'updateAdvertiser',
+            array('userId' => intval($userId))
         );
 
-        $this->queue->push(new AppNexusAdvertiserJob($payload));
-
-        return response()->json(['status' => 'ok', 'message' => 'updateAdvertiser job sent to queue']);
+        return response()->json($response);
     }
 }
