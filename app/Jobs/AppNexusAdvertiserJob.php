@@ -74,8 +74,7 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
 
         $userId = intval($payload['body']['data']['userId']);
 
-        $user = \DB::table('users')->where('id', $userId)->first();
-        // TODO implement error when user not found
+        $user = $this->getUser($userId);
 
         $advertiserData = array(
             'name'             => $user->companyName,
@@ -91,20 +90,6 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
         $advertiser = (object) array();
         try {
             $advertiser = AppNexus\AdvertiserService::addAdvertiser($advertiserData);
-            \DB::table('users')
-                        ->where('id', $userId)
-                        ->update(
-                            [
-                                'appNexusAdvertiserID' => $advertiser->id,
-                                'lastSyncedWithAppNexus' => date("Y-m-d H:i:s")
-                            ]
-                        );
-
-            $response['status'] = 'ok';
-            $response['code'] = 'jobSuccessful';
-            $response['message'] = 'New AppNexus advertiser added';
-            $response['data'] = $advertiser;
-            return $response;
         } catch (\Exception $e) {
             $message = AppNexus\Api::decodeMessage($e->getMessage());
             $response['code'] = 'AppNexusAdvertiserAlreadyAdded';
@@ -113,7 +98,27 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
             $this->dispatchError($response);
         }
 
-        // TODO implement DB update error
+        try {
+            \DB::table('users')
+                ->where('id', $userId)
+                ->update(
+                    [
+                        'appNexusAdvertiserID' => $advertiser->id,
+                        'lastSyncedWithAppNexus' => date("Y-m-d H:i:s")
+                    ]
+                );
+        } catch (Exception $e) {
+            $response['code'] = $e->getCode();
+            $response['message'] = $e->getMessage();
+
+            $this->dispatchError($response);
+        }
+
+        $response['status'] = 'ok';
+        $response['code'] = 'jobSuccessful';
+        $response['message'] = 'New AppNexus advertiser added';
+        $response['data'] = $advertiser;
+        return $response;
     }
 
       /**
@@ -136,24 +141,11 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
 
         $userId = intval($payload['body']['data']['userId']);
 
-        $user = \DB::table('users')->where('id', $userId)->first();
-        // TODO implement error when user not found
+        $user = $this->getUser($userId);
 
         $advertiser = (object) array();
         try {
             $advertiser = AppNexus\AdvertiserService::deleteAdvertiser($user->appNexusAdvertiserID);
-            \DB::table('users')
-                        ->where('id', $userId)
-                        ->update(
-                            ['lastSyncedWithAppNexus' => date("Y-m-d H:i:s")]
-                        );
-
-            $response['status'] = 'ok';
-            $response['code'] = 'jobSuccessful';
-            $response['message'] = 'AppNexus advertiser deleted';
-            $response['data'] = $advertiser;
-
-            return $response;
         } catch (\Exception $e) {
             $message = AppNexus\Api::decodeMessage($e->getMessage());
             $response['code'] = 'AppNexusAdvertiserNotFound';
@@ -162,6 +154,52 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
             $this->dispatchError($response);
         }
 
-        // TODO implement DB update error
+        try {
+            \DB::table('users')
+                ->where('id', $userId)
+                ->update(
+                    ['lastSyncedWithAppNexus' => date("Y-m-d H:i:s")]
+                );
+        } catch (\Exception $e) {
+            $response['code'] = $e->getCode();
+            $response['message'] = $e->getMessage();
+
+            $this->dispatchError($response);
+        }
+
+        $response['status'] = 'ok';
+        $response['code'] = 'jobSuccessful';
+        $response['message'] = 'AppNexus advertiser deleted';
+        $response['data'] = $advertiser;
+
+        return $response;
+    }
+
+    /**
+     * Get user from DB
+     *
+     * @param  int $userId User ID
+     *
+     * @return object|null         User
+     */
+    private function getUser($userId)
+    {
+        $response = $this->createCoreResponse();
+
+        try {
+            $user = \DB::table('users')->where('id', $userId)->first();
+        } catch (\Exception $e) {
+            $response['code'] = $e->getCode();
+            $response['message'] = $e->getMessage();
+            $this->dispatchError($response);
+        }
+
+        if (!$user) {
+            $response['code'] = 'userNotFound';
+            $response['message'] = "User $userId not found";
+            $this->dispatchError($response);
+        }
+
+        return $user;
     }
 }

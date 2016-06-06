@@ -38,11 +38,11 @@ abstract class AppNexusBaseJob implements ShouldQueue
     /**
      * Create error structure
      *
-     * @param  [type] $payload Payload
+     * @param  Array $payload Payload
      *
      * @return void
      */
-    public function createCoreResponse($payload)
+    public function createCoreResponse($payload = array())
     {
         return array(
             'status' => 'error',
