@@ -4,10 +4,11 @@ namespace App\Jobs;
 
 use Exactdrive\AppNexus;
 
-class AppNexusJob extends Job
+class AppNexusAdvertiserJob extends AppNexusBaseJob
 {
 
     private $payload;
+
     /**
      * Create a new job instance.
      *
@@ -28,7 +29,7 @@ class AppNexusJob extends Job
 
         $this->configureAppNexus();
 
-        $response = $this->createCoreResponse();
+        $response = $this->createCoreResponse($this->payload);
 
         if (!isset($this->payload['body'], $this->payload['body']['action'], $this->payload['body']['data'])) {
             $response['code'] = 'malformedPayload';
@@ -56,62 +57,13 @@ class AppNexusJob extends Job
     }
 
     /**
-     * Configure AppNexus settings
-     *
-     * @return void
-     */
-    private function configureAppNexus()
-    {
-        AppNexus\Api::setUserName(config('appnexus.username'));
-        AppNexus\Api::setPassword(config('appnexus.password'));
-        AppNexus\Api::setBaseUrl(config('appnexus.url'));
-    }
-
-    /**
-     * Create error structure
-     *
-     * @return void
-     */
-    private function createCoreResponse()
-    {
-        return array(
-            'status' => 'error',
-            'code' => '',
-            'message' => '',
-            'payload' => $this->payload,
-        );
-    }
-
-    /**
-     * Dispatch error
-     *
-     * @param  array   $response Response
-     * @param  boolean $die     Stop the script
-     *
-     * @return void
-     */
-    private function dispatchError($response = array(), $action = 'delete', $die = true)
-    {
-        // TODO implement logging and or emailing
-        dump($response);
-
-        // TODO // Look if job can be released
-        if ('delete' === $action) {
-            $this->delete();
-        }
-        if ($die) {
-            die;
-        }
-    }
-
-    /**
      * Job to add a new AppNexus Advertiser
      *
      * @param array $payload Payload
      */
     private function addAdvertiser($payload = array())
     {
-        $response = $this->createCoreResponse();
+        $response = $this->createCoreResponse($this->payload);
 
         if (!isset($payload['body']['data']['userId'])) {
             $response['code'] = 'missingParameter';
@@ -173,7 +125,7 @@ class AppNexusJob extends Job
      */
     private function deleteAdvertiser($payload = array())
     {
-        $response = $this->createCoreResponse();
+        $response = $this->createCoreResponse($this->payload);
 
         if (!isset($payload['body']['data']['userId'])) {
             $response['code'] = 'missingParameter';

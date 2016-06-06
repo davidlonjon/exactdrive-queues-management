@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\AppNexusJob;
+use App\Jobs\AppNexusAdvertiserJob;
 use Exactdrive\AppNexus;
 use Illuminate\Queue\Queue;
 
@@ -32,7 +32,7 @@ class QueueController extends Controller
             'userId' => intval($userId),
         );
 
-        $this->queue->push(new AppNexusJob($payload));
+        $this->queue->push(new AppNexusAdvertiserJob($payload));
 
         return response()->json(['status' => 'ok', 'message' => 'Request sent to queue']);
     }
@@ -45,7 +45,7 @@ class QueueController extends Controller
             'userId' => intval($userId),
         );
 
-        $this->queue->push(new AppNexusJob($payload));
+        $this->queue->push(new AppNexusAdvertiserJob($payload));
 
         return response()->json(['status' => 'ok', 'message' => 'Request sent to queue']);
     }
