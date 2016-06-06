@@ -80,16 +80,9 @@ class AppNexusCampaignJob extends AppNexusBaseJob
      */
     private function syncAppNexusDomains($payload = array())
     {
-        $response = $this->createCoreResponse($this->payload);
+        $response = $this->createCoreResponse($payload);
 
-        if (!isset($payload['body']['data']['campaignId'])) {
-            $response['code'] = 'missingParameter';
-            $response['message'] = 'Missing campaign ID parameter';
-
-            $this->dispatchError($response);
-        }
-
-        $campaignId = intval($payload['body']['data']['campaignId']);
+        $campaignId = $this->sanitizeCampaignIdParam($payload);
 
         $campaign = $this->getCampaign($campaignId);
 
@@ -151,6 +144,24 @@ class AppNexusCampaignJob extends AppNexusBaseJob
         $response['message'] = 'AppNexus campaign domains synced';
         $response['data'] = $campaign;
         return $response;
+    }
+
+    /**
+     * Sanitize campaign id param
+     *
+     * @param  array $payload Job payload
+     *
+     * @return int          Sanitized campaign id
+     */
+    public function sanitizeCampaignIdParam($payload) {
+        if (!isset($payload['body']['data']['campaignId'])) {
+            $response['code'] = 'missingParameter';
+            $response['message'] = 'Missing campaign ID parameter';
+
+            $this->dispatchError($response);
+        }
+
+        return intval($payload['body']['data']['campaignId']);
     }
 
     /**
