@@ -24,6 +24,11 @@ class QueueController extends Controller
         $this->queue = app('queue');
     }
 
+    /**
+     * Controller for the route handling adding AppNexus advertiser
+     *
+     * @param int $userId User Id
+     */
     public function addAdvertiser($userId)
     {
         $payload = $this->createJobCorePayload();
@@ -37,6 +42,11 @@ class QueueController extends Controller
         return response()->json(['status' => 'ok', 'message' => 'Request sent to queue']);
     }
 
+    /**
+     * Controller for the route handling deleting AppNexus advertiser
+     *
+     * @param int $userId User Id
+     */
     public function deleteAdvertiser($userId)
     {
         $payload = $this->createJobCorePayload();
@@ -50,6 +60,11 @@ class QueueController extends Controller
         return response()->json(['status' => 'ok', 'message' => 'Request sent to queue']);
     }
 
+    /**
+     * Controller for the route handling updating AppNexus advertiser
+     *
+     * @param int $userId User Id
+     */
     public function updateAdvertiser($userId)
     {
         $payload = $this->createJobCorePayload();
@@ -63,6 +78,11 @@ class QueueController extends Controller
         return response()->json(['status' => 'ok', 'message' => 'Request sent to queue']);
     }
 
+    /**
+     * Create job core paylaod
+     *
+     * @return array Core payload
+     */
     private function createJobCorePayload()
     {
         return array(
