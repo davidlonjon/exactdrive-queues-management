@@ -24,6 +24,18 @@ class CampaignController extends Controller
         $this->queue = app('queue');
     }
 
+    public function createNewJob($job, $campaignId) {
+        $payload = $this->createJobCorePayload();
+        $payload['body']['action'] = $job;
+        $payload['body']['data'] = array(
+            'campaignId' => intval($campaignId),
+        );
+
+        $this->queue->push(new AppNexusCampaignJob($payload));
+
+        return ['status' => 'ok', 'message' => "$job job sent to queue"];
+    }
+
     /**
      * Controller for the route handling syncing AppNexus campaign domain.
      *
@@ -31,14 +43,7 @@ class CampaignController extends Controller
      */
     public function syncAppNexusDomains($campaignId)
     {
-        $payload = $this->createJobCorePayload();
-        $payload['body']['action'] = 'syncAppNexusDomains';
-        $payload['body']['data'] = array(
-            'campaignId' => intval($campaignId),
-        );
-
-        $this->queue->push(new AppNexusCampaignJob($payload));
-
-        return response()->json(['status' => 'ok', 'message' => 'syncAppNexusDomains job sent to queue']);
+        $response = $this->createNewJob('syncAppNexusDomains', $campaignId);
+        return response()->json($response);
     }
 }
