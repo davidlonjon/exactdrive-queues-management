@@ -39,7 +39,7 @@ class AdvertiserController extends Controller
 
         $this->queue->push(new AppNexusAdvertiserJob($payload));
 
-        return response()->json(['status' => 'ok', 'message' => 'Request sent to queue']);
+        return response()->json(['status' => 'ok', 'message' => 'addAdvertiser job sent to queue']);
     }
 
     /**
@@ -57,7 +57,7 @@ class AdvertiserController extends Controller
 
         $this->queue->push(new AppNexusAdvertiserJob($payload));
 
-        return response()->json(['status' => 'ok', 'message' => 'Request sent to queue']);
+        return response()->json(['status' => 'ok', 'message' => 'deleteAdvertiser job sent to queue']);
     }
 
     /**
@@ -75,6 +75,6 @@ class AdvertiserController extends Controller
 
         $this->queue->push(new AppNexusAdvertiserJob($payload));
 
-        return response()->json(['status' => 'ok', 'message' => 'Request sent to queue']);
+        return response()->json(['status' => 'ok', 'message' => 'updateAdvertiser job sent to queue']);
     }
 }

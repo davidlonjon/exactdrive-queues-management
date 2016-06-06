@@ -39,6 +39,6 @@ class CampaignController extends Controller
 
         $this->queue->push(new AppNexusCampaignJob($payload));
 
-        return response()->json(['status' => 'ok', 'message' => 'syncAppNexusDomains request sent to queue']);
+        return response()->json(['status' => 'ok', 'message' => 'syncAppNexusDomains job sent to queue']);
     }
 }
