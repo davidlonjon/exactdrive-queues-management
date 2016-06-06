@@ -26,7 +26,6 @@ class AppNexusCampaignJob extends AppNexusBaseJob
      */
     public function handle()
     {
-
         $this->configureAppNexus();
 
         $response = $this->createCoreResponse($this->payload);
@@ -73,9 +72,11 @@ class AppNexusCampaignJob extends AppNexusBaseJob
     }
 
     /**
-     * Job to sync campaign domains
+     * Job to sync campaign domains.
      *
      * @param array $payload Payload
+     *
+     * @return Array          Job response
      */
     private function syncAppNexusDomains($payload = array())
     {
@@ -99,16 +100,14 @@ class AppNexusCampaignJob extends AppNexusBaseJob
         }
 
         foreach (array('include', 'exclude') as $inventoryUrlFilter) {
-
-            // Build domain array from list of domains in Campaign
+            // Build domain array from list of domains in campaign.
             $inventoryUrlProperty = $inventoryUrlFilter."InventoryUrls";
             $domains = $campaign->{$inventoryUrlProperty};
             $domains = preg_replace('/[^A-Za-z0-9\-\.\n]/', '', trim($domains));
             $domainsArray = explode("\n", $domains);
 
             if (!empty($domainsArray)) {
-
-                // Build data object
+                // Build data object.
                 $data = new \stdClass();
                 $data->name = "$campaign->name $inventoryUrlFilter list";
                 $data->description = "Domains to $inventoryUrlFilter from campaign $campaign->name";
@@ -123,13 +122,13 @@ class AppNexusCampaignJob extends AppNexusBaseJob
                     $appNexusDomainListId = 'appNexusIncludeDomainListId';
                 }
 
-                $campaignFieldsToUpdate = array(
+                $fieldsToUpdate = array(
                         'lastSyncedWithAppNexus' => date('Y-m-d H:i:s')
                 );
 
                 if (empty($campaign->{$appNexusDomainListId})) {
                     $AppNexusResponse = AppNexus\DomainListService::addDomainList($data);
-                    $campaignFieldsToUpdate[$appNexusDomainListId] = $AppNexusResponse->id;
+                    $fieldsToUpdate[$appNexusDomainListId] = $AppNexusResponse->id;
                 } else {
                     $AppNexusResponse = AppNexus\DomainListService::updateDomainList($campaign->{$appNexusDomainListId}, $data);
                 }
@@ -137,7 +136,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
                 try {
                     \DB::table('campaigns')
                         ->where('id', $campaign->id)
-                        ->update($campaignFieldsToUpdate);
+                        ->update($fieldsToUpdate);
                 } catch (Exception $e) {
                     $response['code'] = $e->getCode();
                     $response['message'] = $e->getMessage();
@@ -155,13 +154,14 @@ class AppNexusCampaignJob extends AppNexusBaseJob
     }
 
     /**
-     * Campaign pre sync checks
+     * Campaign pre sync checks.
      *
      * @param  int $campaign Campaign id
      *
      * @return array           Pre checks data
      */
-    private function campaignPreSyncChecks($campaign) {
+    private function campaignPreSyncChecks($campaign)
+    {
         $data = $this->createCoreResponse(array());
 
         $user = $this->getAppNexusUserForAdvertiserId($campaign->advertiserId);
@@ -189,7 +189,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
     }
 
     /**
-     * Get campaign from DB
+     * Get campaign from DB.
      *
      * @param  int $campaignId User ID
      *
@@ -217,7 +217,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
     }
 
     /**
-     * Get campaign inventories
+     * Get campaign inventories.
      *
      * @param  int $campaignId Campaign id
      *
@@ -233,7 +233,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
     }
 
     /**
-     * Get AppNexus advertiser id
+     * Get AppNexus advertiser id.
      *
      * @param  int $advertiserId Advertiser id
      *
@@ -259,12 +259,12 @@ class AppNexusCampaignJob extends AppNexusBaseJob
     }
 
     /**
-     * Check whether or not user associated to an Advertiser has an AppNexus Advertiser ID.
+     * Check whether or not user associated to an advertiser has an AppNexus advertiser id.
      *
      * @param  object  $user User
      * @param  int  $advertiserId Advertiser id
      *
-     * @return boolean        Returns true if a user has an AppNexus Advertiser ID.
+     * @return boolean        Returns true if a user has an AppNexus advertiser id.
      */
     private function isValidAppNexusAdvertiser($user, $advertiserId)
     {
@@ -280,7 +280,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
     }
 
     /**
-     * Check whether or not a campaign as a valid sync status
+     * Check whether or not a campaign as a valid sync status.
      *
      * @param  string  $campaignStatus Campaign status
      *

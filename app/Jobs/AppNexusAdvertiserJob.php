@@ -61,9 +61,11 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
     }
 
     /**
-     * Job to add a new AppNexus Advertiser
+     * Job to add a new AppNexus Advertiser.
      *
      * @param array $payload Payload
+     *
+     * @return Array          Job response
      */
     private function addAdvertiser($payload = array())
     {
@@ -126,11 +128,11 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
     }
 
     /**
-     * Job to delete a AppNexus advertiser
+     * Job to delete a AppNexus advertiser.
      *
      * @param  array  $payload Payload
      *
-     * @return [type]          [description]
+     * @return Array          Job response
      */
     private function deleteAdvertiser($payload = array())
     {
@@ -180,11 +182,11 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
     }
 
     /**
-     * Job to update a AppNexus advertiser
+     * Job to update a AppNexus advertiser.
      *
      * @param  array  $payload Payload
      *
-     * @return [type]          [description]
+     * @return Array          Job response
      */
     private function updateAdvertiser($payload = array())
     {
@@ -245,7 +247,7 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
     }
 
     /**
-     * Get user from DB
+     * Get user from DB.
      *
      * @param  int $userId User ID
      *

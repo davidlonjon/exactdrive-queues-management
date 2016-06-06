@@ -25,7 +25,7 @@ class AdvertiserController extends Controller
     }
 
     /**
-     * Controller for the route handling adding AppNexus advertiser
+     * Controller for the route handling adding AppNexus advertiser.
      *
      * @param int $userId User Id
      */
@@ -43,7 +43,7 @@ class AdvertiserController extends Controller
     }
 
     /**
-     * Controller for the route handling deleting AppNexus advertiser
+     * Controller for the route handling deleting AppNexus advertiser.
      *
      * @param int $userId User Id
      */
@@ -61,7 +61,7 @@ class AdvertiserController extends Controller
     }
 
     /**
-     * Controller for the route handling updating AppNexus advertiser
+     * Controller for the route handling updating AppNexus advertiser.
      *
      * @param int $userId User Id
      */

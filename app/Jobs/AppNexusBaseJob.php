@@ -24,7 +24,7 @@ abstract class AppNexusBaseJob implements ShouldQueue
     use InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * Configure AppNexus settings
+     * Configure AppNexus settings.
      *
      * @return void
      */
@@ -36,11 +36,11 @@ abstract class AppNexusBaseJob implements ShouldQueue
     }
 
     /**
-     * Create error structure
+     * Create error structure.
      *
      * @param  Array $payload Payload
      *
-     * @return void
+     * @return Array          Job core response
      */
     public function createCoreResponse($payload = array())
     {
@@ -53,7 +53,7 @@ abstract class AppNexusBaseJob implements ShouldQueue
     }
 
     /**
-     * Dispatch error
+     * Dispatch error.
      *
      * @param  array   $response Response
      * @param  boolean $die     Stop the script

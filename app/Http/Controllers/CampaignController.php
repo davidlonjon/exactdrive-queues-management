@@ -25,7 +25,7 @@ class CampaignController extends Controller
     }
 
     /**
-     * Controller for the route handling syncing AppNexus campaign domain
+     * Controller for the route handling syncing AppNexus campaign domain.
      *
      * @param int $campaignId Campaign Id
      */

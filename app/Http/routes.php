@@ -14,10 +14,10 @@ $app->get('/', function () use ($app) {
     return $app->version();
 });
 
-// Routes related to AppNexus advertisers
+// Routes related to AppNexus advertisers.
 $app->get('addAdvertiser/{userId}', 'AdvertiserController@addAdvertiser');
 $app->get('deleteAdvertiser/{userId}', 'AdvertiserController@deleteAdvertiser');
 $app->get('updateAdvertiser/{userId}', 'AdvertiserController@updateAdvertiser');
 
-// Routes related to AppNexus campaigns
+// Routes related to AppNexus campaigns.
 $app->get('syncAppNexusDomains/{campaignId}', 'CampaignController@syncAppNexusDomains');

@@ -7,7 +7,7 @@ use Laravel\Lumen\Routing\Controller as BaseController;
 class Controller extends BaseController
 {
     /**
-     * Create job core paylaod
+     * Create job core payload.
      *
      * @return array Core payload
      */
