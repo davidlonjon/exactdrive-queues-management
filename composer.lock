@@ -112,7 +112,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/davidlonjon/app-nexus-sdk-php.git",
-                "reference": "d2b5dc2eda7ba7f816b5f3e055ff7b2d1b43896b"
+                "reference": "9cdc3c5d5aea6ed197a745928b7b71a79527f464"
             },
             "require": {
                 "league/flysystem": "^1.0",
@@ -141,7 +141,7 @@
                 }
             ],
             "description": "App Nexus SDK for PHP",
-            "time": "2016-05-30 06:51:46"
+            "time": "2016-06-06 12:49:26"
         },
         {
             "name": "guzzle/guzzle",
