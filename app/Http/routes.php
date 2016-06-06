@@ -16,3 +16,4 @@ $app->get('/', function () use ($app) {
 
 $app->get('addAdvertiser/{id}', 'QueueController@addAdvertiser');
 $app->get('deleteAdvertiser/{id}', 'QueueController@deleteAdvertiser');
+$app->get('updateAdvertiser/{id}', 'QueueController@updateAdvertiser');
