@@ -142,8 +142,10 @@ class AppNexusJob extends Job
             \DB::table('users')
                         ->where('id', $userId)
                         ->update(
-                            ['appNexusAdvertiserID' => $advertiser->id],
-                            ['lastSyncedWithAppNexus' => date("Y-m-d H:i:s")]
+                            [
+                                'appNexusAdvertiserID' => $advertiser->id,
+                                'lastSyncedWithAppNexus' => date("Y-m-d H:i:s")
+                            ]
                         );
 
             $response['status'] = 'ok';
