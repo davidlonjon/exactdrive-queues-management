@@ -14,6 +14,7 @@ $app->get('/', function () use ($app) {
     return $app->version();
 });
 
-$app->get('addAdvertiser/{id}', 'QueueController@addAdvertiser');
-$app->get('deleteAdvertiser/{id}', 'QueueController@deleteAdvertiser');
-$app->get('updateAdvertiser/{id}', 'QueueController@updateAdvertiser');
+// Routes related to advertisers
+$app->get('addAdvertiser/{userId}', 'AdvertiserController@addAdvertiser');
+$app->get('deleteAdvertiser/{userId}', 'AdvertiserController@deleteAdvertiser');
+$app->get('updateAdvertiser/{userId}', 'AdvertiserController@updateAdvertiser');

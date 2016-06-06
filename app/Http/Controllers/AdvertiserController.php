@@ -6,7 +6,7 @@ use App\Jobs\AppNexusAdvertiserJob;
 use Exactdrive\AppNexus;
 use Illuminate\Queue\Queue;
 
-class QueueController extends Controller
+class AdvertiserController extends Controller
 {
 
     /**
@@ -76,21 +76,5 @@ class QueueController extends Controller
         $this->queue->push(new AppNexusAdvertiserJob($payload));
 
         return response()->json(['status' => 'ok', 'message' => 'Request sent to queue']);
-    }
-
-    /**
-     * Create job core paylaod
-     *
-     * @return array Core payload
-     */
-    private function createJobCorePayload()
-    {
-        return array(
-            'body' => array(
-                'action' => '',
-                'data' => '',
-            ),
-            'ttl' => 3600 // TTL to be defined
-        );
     }
 }
