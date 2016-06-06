@@ -107,7 +107,7 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
             return $response;
         } catch (\Exception $e) {
             $message = AppNexus\Api::decodeMessage($e->getMessage());
-            $response['code'] = 'advertiserAlreadyAdded';
+            $response['code'] = 'AppNexusAdvertiserAlreadyAdded';
             $response['message'] = $message->error;
 
             $this->dispatchError($response);
@@ -156,7 +156,7 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
             return $response;
         } catch (\Exception $e) {
             $message = AppNexus\Api::decodeMessage($e->getMessage());
-            $response['code'] = 'advertiserAlreadyAdded';
+            $response['code'] = 'AppNexusAdvertiserNotFound';
             $response['message'] = $message->error;
 
             $this->dispatchError($response);
