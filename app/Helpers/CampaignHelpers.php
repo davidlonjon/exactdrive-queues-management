@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use Exactdrive\AppNexus;
+
 class CampaignHelpers
 {
 
@@ -225,4 +227,153 @@ class CampaignHelpers
 
         return $zipCodes;
     }
+
+    /**
+     * Get AppNexus category profile
+     *
+     * @param  object $inventory Inventory
+     * @param  object $data      AppNexus Sync data
+     *
+     * @return object            AppNexus Sync data
+     */
+    public function getAppNexusProfileCategoryData($inventory, $data)
+    {
+        if (empty($inventory)) {
+            return null;
+        }
+
+        if (empty($data)) {
+            $data = new stdClass();
+        }
+
+        $categoryIds = null;
+        if (!empty($inventory->categories)) {
+            $categoryIds = explode(',', $inventory->categories);
+        }
+
+        $data->content_category_targets = new stdClass();
+        $data->content_category_targets->allow_unknown = false;
+        $data->content_category_targets->content_categories = array();
+
+        // Return empty content_categories array if no categories.
+        if (empty($categoryIds)) {
+            return $data;
+        }
+
+        foreach ($categoryIds as $categoryId) {
+            // TODO: cache query
+            $categoryRow = \DB::table('categories')
+                ->where('id', $categoryId)
+                ->first();
+
+            if (!empty($categoryRow->appNexusCategoryId)) {
+                $data->content_category_targets->content_categories[] =
+                    (object) array(
+                        'id'     => (int) $categoryRow->appNexusCategoryId,
+                        'action' => $inventory->filter
+                    );
+            }
+        }
+
+        return $data;
+    }
+
+    public function getAppNexusProfileRetargetingData($inventory, $data)
+    {
+        if (empty($inventory)) {
+            return null;
+        }
+
+        if (empty($data)) {
+            $data = new stdClass();
+        }
+
+        // Todo
+        // $pixels = $this->retargetingPixels();
+
+        $data->segment_boolean_operator = 'or';
+        $data->segment_targets = array();
+
+        // Return empty segment_targets if no pixels
+        if (empty($pixels)) {
+            return $data;
+        }
+
+        foreach ($pixels as $pixel) {
+            $appNexusData = $pixel->getAppNexusData();
+            if (!empty($appNexusData)) {
+                $data->segment_targets[] = (object) array(
+                    'id' => (int) $appNexusData->id
+                );
+            }
+        }
+
+        return $data;
+    }
+
+    public function retargetingPixels($deleted = false)
+    {
+        // Todo
+        // $pixels = $pixelTable->fetchAllRetargetingPixels($this->row->id, $deleted);
+        if (count($pixels) == 0) {
+            return null;
+        } else {
+            return array_map(function ($pixel) {
+                return new AppNexus\Segment($pixel);
+            }, iterator_to_array($pixels));
+        }
+    }
+
+    // Todo
+    // public function getAppNexusProfileFacebookData($inventory, $data)
+    // {
+    //     if (empty($inventory)) {
+    //         return null;
+    //     }
+
+    //     if (empty($data)) {
+    //         $data = new stdClass();
+    //     }
+
+    //     $facebookCategoryIds = $inventory->getCategories();
+
+    //     $data->supply_type_action = 'include';
+    //     $data->supply_type_targets = array('facebook_sidebar');
+    //     $data->use_inventory_attribute_targets = false;
+    //     $data->trust = 'seller';
+    //     $data->inventory_action = $inventory->filter;
+
+    //     // AppNexus complains if this property is passed when
+    //     // use_inventory_attribute_targets is false.
+    //     unset($data->inventory_attribute_targets);
+
+    //     // Facebook targeting only works on the Production AppNexus API
+    //     if (APPLICATION_ENV !== 'production') return $data;
+
+    //     if (empty($facebookCategoryIds)) {
+    //         $data->platform_placement_targets = array();
+    //         $data->member_targets = array();
+    //         $data->member_targets[] = (object) array(
+    //             'id' => 1398,
+    //             'action' => $inventory->filter
+    //         );
+    //     } else {
+    //         $facebookCategoriesTable = new Zend_Db_Table('facebookCategories');
+    //         $data->member_targets = array();
+    //         $data->platform_placement_targets = array();
+
+    //         foreach ($facebookCategoryIds as $facebookCategoryId) {
+    //             $facebookCategory =
+    //                 $facebookCategoriesTable->find($facebookCategoryId)
+    //                                         ->current();
+
+    //             $data->platform_placement_targets[] = (object) array(
+    //                 'id' => $facebookCategory->appNexusPlacementId,
+    //                 'action' => $inventory->filter
+    //             );
+    //         }
+    //     }
+
+    //     return $data;
+    // }
 }

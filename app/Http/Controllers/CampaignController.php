@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Exactdrive\AppNexus;
 use Illuminate\Queue\Queue;
 
 class CampaignController extends Controller

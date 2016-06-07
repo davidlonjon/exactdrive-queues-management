@@ -171,9 +171,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
         $campaignHelper = new CampaignHelpers();
 
         foreach ($preChecksData['data']['inventories'] as $inventory) {
-
             if ($inventory->cost > 0) {
-
                 //
                 // Configure campaign profile data.
                 //
@@ -201,28 +199,20 @@ class AppNexusCampaignJob extends AppNexusBaseJob
                 );
 
                 // Campaign frequency profile
-                $data = $campaignHelper->getAppNexusProfileFrequencyData(
-                    $inventory,
-                    $data,
-                    $campaign->id
-                );
+                $data = $campaignHelper->getAppNexusProfileFrequencyData($inventory, $data, $campaign->id);
 
                 // Campaign geographical targeting profile
-                $data = $campaignHelper->getAppNexusProfileGeographyData(
-                   $data,
-                   $campaign
-                );
+                $data = $campaignHelper->getAppNexusProfileGeographyData($data, $campaign);
 
 
-            //    //
-            //    // Campaign Profile Inventory Targeting
-            //    //
-
-            //    if ($inventory->type == 'display') {
-            //        $data = $campaign->getAppNexusProfileCategoryData(
-            //            $inventory,
-            //            $data
-            //        );
+                //
+                // Campaign Profile Inventory Targeting
+                //
+                // if ($inventory->type == 'display') {
+                //     $data = $campaignHelper->getAppNexusProfileCategoryData(
+                //         $inventory,
+                //         $data
+                //    );
             //    } elseif ($inventory->type == 'retargeting') {
             //        $data = $campaign->getAppNexusProfileRetargetingData(
             //            $inventory,
@@ -302,7 +292,8 @@ class AppNexusCampaignJob extends AppNexusBaseJob
      *
      * @return int          Sanitized campaign id
      */
-    public function sanitizeCampaignIdParam($payload) {
+    public function sanitizeCampaignIdParam($payload)
+    {
         if (!isset($payload['body']['data']['campaignId'])) {
             $response['code'] = 'missingParameter';
             $response['message'] = 'Missing campaign ID parameter';

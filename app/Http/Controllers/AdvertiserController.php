@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\AppNexusAdvertiserJob;
-use Exactdrive\AppNexus;
 use Illuminate\Queue\Queue;
 
 class AdvertiserController extends Controller
