@@ -45,7 +45,7 @@ abstract class AppNexusBaseJob implements ShouldQueue
     public function createCoreResponse($payload = array())
     {
         return array(
-            'status' => 'error',
+            'status' => 'failed',
             'code' => '',
             'message' => '',
             'payload' => $payload,
