@@ -153,7 +153,7 @@ class CampaignHelpers
         // TODO Implement query caching
         return \DB::table('countries')
             ->whereIn('id', explode(',', $campaign->countries))
-            ->lists('appNexusCountryId');;
+            ->lists('appNexusCountryId');
     }
 
     /**
