@@ -172,46 +172,47 @@ class AppNexusCampaignJob extends AppNexusBaseJob
 
         foreach ($preChecksData['data']['inventories'] as $inventory) {
 
-           if ($inventory->cost > 0) {
+            if ($inventory->cost > 0) {
 
-               //
-               // Configure campaign profile data.
-               //
-               $data = new \stdClass();
+                //
+                // Configure campaign profile data.
+                //
+                $data = new \stdClass();
 
-               // Shared inventory settings.
-               $data->trust = 'appnexus';
-               $data->certified_supply = false;
-               $data->allow_unaudited = false;
-               $data->intended_audience_targets = array(
-                   'general',
-                   'children',
-                   'young_adult',
-                   'mature'
-               );
+                // Shared inventory settings.
+                $data->trust = 'appnexus';
+                $data->certified_supply = false;
+                $data->allow_unaudited = false;
+                $data->intended_audience_targets = array(
+                    'general',
+                    'children',
+                    'young_adult',
+                    'mature'
+                );
 
-               $data->use_inventory_attribute_targets = true;
-               $data->inventory_attribute_targets = array(
-                   (object) array('id' => 2),
-                   (object) array('id' => 4),
-                   (object) array('id' => 6),
-                   (object) array('id' => 8),
-                   (object) array('id' => 10),
-                   (object) array('id' => 16)
-               );
+                $data->use_inventory_attribute_targets = true;
+                $data->inventory_attribute_targets = array(
+                    (object) array('id' => 2),
+                    (object) array('id' => 4),
+                    (object) array('id' => 6),
+                    (object) array('id' => 8),
+                    (object) array('id' => 10),
+                    (object) array('id' => 16)
+                );
 
-               $data = $campaignHelper->getAppNexusProfileFrequencyData(
-                   $inventory,
+                // Campaign frequency profile
+                $data = $campaignHelper->getAppNexusProfileFrequencyData(
+                    $inventory,
+                    $data,
+                    $campaign->id
+                );
+
+                // Campaign geographical targeting profile
+                $data = $campaignHelper->getAppNexusProfileGeographyData(
                    $data,
-                   $campaign->id
-               );
+                   $campaign
+                );
 
-            // Campaign Profile Geographical Targeting
-
-            //    $data = $campaign->getAppNexusProfileGeographyData(
-            //        $inventory,
-            //        $data
-            //    );
 
             //    //
             //    // Campaign Profile Inventory Targeting
