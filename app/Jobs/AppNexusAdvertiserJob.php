@@ -120,8 +120,8 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
             $this->dispatchError($response);
         }
 
-        $response['status'] = 'ok';
-        $response['code'] = 'jobSuccessful';
+        $response['status'] = 'complete';
+        $response['code'] = 'jobCompleted';
         $response['message'] = 'New AppNexus advertiser added';
         $response['data'] = $advertiser;
         return $response;
@@ -173,8 +173,8 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
             $this->dispatchError($response);
         }
 
-        $response['status'] = 'ok';
-        $response['code'] = 'jobSuccessful';
+        $response['status'] = 'complete';
+        $response['code'] = 'jobCompleted';
         $response['message'] = 'AppNexus advertiser deleted';
         $response['data'] = $advertiser;
 
@@ -238,8 +238,8 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
             $this->dispatchError($response);
         }
 
-        $response['status'] = 'ok';
-        $response['code'] = 'jobSuccessful';
+        $response['status'] = 'complete';
+        $response['code'] = 'jobCompleted';
         $response['message'] = 'AppNexus advertiser updated';
         $response['data'] = $advertiser;
 

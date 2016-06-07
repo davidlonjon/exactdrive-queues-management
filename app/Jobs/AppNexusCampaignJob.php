@@ -140,8 +140,8 @@ class AppNexusCampaignJob extends AppNexusBaseJob
             }
         }
 
-        $response['status'] = 'ok';
-        $response['code'] = 'jobSuccessful';
+        $response['status'] = 'complete';
+        $response['code'] = 'jobCompleted';
         $response['message'] = 'AppNexus campaign domains synced';
         $response['data'] = $campaign;
         return $response;
@@ -278,8 +278,8 @@ class AppNexusCampaignJob extends AppNexusBaseJob
             }
         }
 
-        $response['status'] = 'ok';
-        $response['code'] = 'jobSuccessful';
+        $response['status'] = 'complete';
+        $response['code'] = 'jobCompleted';
         $response['message'] = 'AppNexus campaign profile synced';
         // $response['data'] = $campaign;
         return $response;
