@@ -24,6 +24,7 @@ class CampaignHelpers
             $data = new \stdClass();
         }
 
+        // TODO Implement query caching
         $frequency = \DB::table('frequencies')
             ->where('campaignId', $campaignId)
             ->first();
@@ -149,6 +150,7 @@ class CampaignHelpers
      */
     public function getAppNexusCountryIds($campaign)
     {
+        // TODO Implement query caching
         return \DB::table('countries')
             ->whereIn('id', explode(',', $campaign->countries))
             ->lists('appNexusCountryId');;
@@ -163,6 +165,7 @@ class CampaignHelpers
      */
     public function getAppNexusRegions($campaign)
     {
+        // TODO Implement query caching
         return \DB::table('states')
             ->whereIn('id', explode(',', $campaign->states))
             ->lists('appNexusStateId');
@@ -177,6 +180,7 @@ class CampaignHelpers
      */
     public function getAppNexusDemographicMarketAreaIds($campaign)
     {
+        // TODO Implement query caching
         return \DB::table('demographics')
             ->whereIn('id', explode(',', $campaign->demographicMarketArea))
             ->lists('appNexusDemographicAreaId');
@@ -191,6 +195,7 @@ class CampaignHelpers
      */
     public function getAppNexusCityIds($campaign)
     {
+        // TODO Implement query caching
         return \DB::table('cities')
             ->whereIn('id', explode(',', $campaign->cities))
             ->lists('appNexusCityId');
