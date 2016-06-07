@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Helpers\CampaignHelpers;
 use Exactdrive\AppNexus;
 
 class AppNexusCampaignJob extends AppNexusBaseJob
@@ -44,9 +45,9 @@ class AppNexusCampaignJob extends AppNexusBaseJob
                 $response = $this->syncAppNexusDomains($this->payload);
                 break;
 
-            // case 'syncAppNexusCampaignProfile':
-            //     $response = $this->syncAppNexusCampaignProfile($this->payload);
-            //     break;
+            case 'syncAppNexusCampaignProfile':
+                $response = $this->syncAppNexusCampaignProfile($this->payload);
+                break;
 
             // case 'syncAppNexusLineItem':
             //     $response = $this->syncAppNexusLineItem($this->payload);
@@ -143,6 +144,153 @@ class AppNexusCampaignJob extends AppNexusBaseJob
         $response['code'] = 'jobSuccessful';
         $response['message'] = 'AppNexus campaign domains synced';
         $response['data'] = $campaign;
+        return $response;
+    }
+
+    /**
+     * Job to sync campaign profile.
+     *
+     * @param array $payload Payload
+     *
+     * @return Array          Job response
+     */
+    private function syncAppNexusCampaignProfile($payload = array())
+    {
+        $response = $this->createCoreResponse($payload);
+
+        $campaignId = $this->sanitizeCampaignIdParam($payload);
+
+        $campaign = $this->getCampaign($campaignId);
+
+        $preChecksData = $this->campaignPreSyncChecks($campaign);
+        if ('error' === $preChecksData['status'] && !empty($preChecksData['code'])) {
+            $response = $preChecksData;
+            return $response;
+        }
+
+        $campaignHelper = new CampaignHelpers();
+
+        foreach ($preChecksData['data']['inventories'] as $inventory) {
+
+           if ($inventory->cost > 0) {
+
+               //
+               // Configure campaign profile data.
+               //
+               $data = new \stdClass();
+
+               // Shared inventory settings.
+               $data->trust = 'appnexus';
+               $data->certified_supply = false;
+               $data->allow_unaudited = false;
+               $data->intended_audience_targets = array(
+                   'general',
+                   'children',
+                   'young_adult',
+                   'mature'
+               );
+
+               $data->use_inventory_attribute_targets = true;
+               $data->inventory_attribute_targets = array(
+                   (object) array('id' => 2),
+                   (object) array('id' => 4),
+                   (object) array('id' => 6),
+                   (object) array('id' => 8),
+                   (object) array('id' => 10),
+                   (object) array('id' => 16)
+               );
+
+               $data = $campaignHelper->getAppNexusProfileFrequencyData(
+                   $inventory,
+                   $data,
+                   $campaign->id
+               );
+
+            // Campaign Profile Geographical Targeting
+
+            //    $data = $campaign->getAppNexusProfileGeographyData(
+            //        $inventory,
+            //        $data
+            //    );
+
+            //    //
+            //    // Campaign Profile Inventory Targeting
+            //    //
+
+            //    if ($inventory->type == 'display') {
+            //        $data = $campaign->getAppNexusProfileCategoryData(
+            //            $inventory,
+            //            $data
+            //        );
+            //    } elseif ($inventory->type == 'retargeting') {
+            //        $data = $campaign->getAppNexusProfileRetargetingData(
+            //            $inventory,
+            //            $data
+            //        );
+            //    } elseif ($inventory->type == 'mobile') {
+            //        $data = $campaign->getAppNexusProfileCategoryData(
+            //            $inventory,
+            //            $data
+            //        );
+            //        $data->device_type_action = 'include';
+            //        $data->device_type_targets = array(
+            //            'phone',
+            //            'tablet'
+            //        );
+            //    } elseif ($inventory->type == 'facebook') {
+            //        $data = $campaign->getAppNexusProfileFacebookData(
+            //            $inventory,
+            //            $data
+            //        );
+            //    } elseif ($inventory->type == 'domain_inclusion') {
+
+            //        // If inventoryUrlFilter is NULL or 'advertise', include
+            //        // domain list. Otherwise, exclude domain list.
+            //        if ($campaign->inventoryUrlFilter == 'exclude') {
+            //            if (!empty($campaign->appNexusExcludeDomainListId)) {
+            //                $data->domain_list_action = 'exclude';
+            //                $data->domain_list_targets = array(
+            //                    (object) array(
+            //                        'id' => (int) $campaign->appNexusExcludeDomainListId
+            //                    )
+            //                );
+            //            }
+            //        } else {
+            //            if (!empty($campaign->appNexusIncludeDomainListId)) {
+            //                $data->domain_list_action = 'include';
+            //                $data->domain_list_targets = array(
+            //                    (object) array(
+            //                        'id' => (int) $this->appNexusIncludeDomainListId
+            //                    )
+            //                );
+            //            }
+            //        }
+            //    }
+
+            //    //
+            //    // Sync Profile Data
+            //    //
+
+            //    if (empty($inventory->appNexusProfileId)) {
+            //        $AppNexusResponse = AppNexus_ProfileService::addProfile(
+            //            $appNexusAdvertiserId,
+            //            $data
+            //        );
+            //        $inventory->appNexusProfileId = $AppNexusResponse->id;
+            //    } else {
+            //        $AppNexusResponse = AppNexus_ProfileService::updateProfile(
+            //            $inventory->appNexusProfileId,
+            //            $appNexusAdvertiserId,
+            //            $data
+            //        );
+            //    }
+            }
+        }
+
+        $response['status'] = 'ok';
+        $response['code'] = 'jobSuccessful';
+        $response['message'] = 'AppNexus campaign profile synced';
+        // $response['data'] = $campaign;
         return $response;
     }
 

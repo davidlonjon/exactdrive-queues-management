@@ -21,3 +21,4 @@ $app->get('updateAdvertiser/{userId}', 'AdvertiserController@updateAdvertiser');
 
 // Routes related to AppNexus campaigns.
 $app->get('syncAppNexusDomains/{campaignId}', 'CampaignController@syncAppNexusDomains');
+$app->get('syncAppNexusCampaignProfile/{campaignId}', 'CampaignController@syncAppNexusCampaignProfile');
