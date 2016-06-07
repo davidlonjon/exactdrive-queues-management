@@ -69,7 +69,7 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
      */
     private function addAdvertiser($payload = array())
     {
-        $response = $this->createCoreResponse($this->payload);
+        $response = $this->createCoreResponse($payload);
 
         if (!isset($payload['body']['data']['userId'])) {
             $response['code'] = 'missingParameter';
@@ -136,7 +136,7 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
      */
     private function deleteAdvertiser($payload = array())
     {
-        $response = $this->createCoreResponse($this->payload);
+        $response = $this->createCoreResponse($payload);
 
         if (!isset($payload['body']['data']['userId'])) {
             $response['code'] = 'missingParameter';
@@ -190,7 +190,7 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
      */
     private function updateAdvertiser($payload = array())
     {
-        $response = $this->createCoreResponse($this->payload);
+        $response = $this->createCoreResponse($payload);
 
         if (!isset($payload['body']['data']['userId'])) {
             $response['code'] = 'missingParameter';
