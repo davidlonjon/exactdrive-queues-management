@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+
+use App\Helpers\QueueJobsLogingHelpers as LogHelper;
 use Laravel\Lumen\Routing\Controller as BaseController;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\Exception\UnsatisfiedDependencyException;
 
 class Controller extends BaseController
 {
@@ -25,6 +29,16 @@ class Controller extends BaseController
         $jobClass = "App\\Jobs\\$job";
         $this->queue->push(new $jobClass($payload));
 
+        $logHelper = new LogHelper();
+        $logHelper->createJobLog(
+            $payload['uuid'],
+            $job,
+            $jobAction,
+            $payload,
+            'waiting',
+            env('RACKSPACECLOUD_QUEUE', 'jobs')
+        );
+
         return array('status' => 'ok', 'message' => "$jobAction job sent to queue");
     }
 
@@ -36,6 +50,7 @@ class Controller extends BaseController
     public function createJobCorePayload()
     {
         return array(
+            'uuid' => Uuid::uuid1()->toString(),
             'body' => array(
                 'action' => '',
                 'data' => '',

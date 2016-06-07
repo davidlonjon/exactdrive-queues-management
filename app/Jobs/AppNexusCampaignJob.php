@@ -3,11 +3,24 @@
 namespace App\Jobs;
 
 use App\Helpers\CampaignHelpers;
+use App\Helpers\QueueJobsLogingHelpers as LogHelper;
 use Exactdrive\AppNexus;
 
 class AppNexusCampaignJob extends AppNexusBaseJob
 {
 
+    /**
+     * Log helper.
+     *
+     * @var object
+     */
+    private $logHelper;
+
+    /**
+     * Job payload.
+     *
+     * @var array
+     */
     private $payload;
 
     /**
@@ -18,6 +31,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
     public function __construct($payload)
     {
         $this->payload = $payload;
+        $this->logHelper = new LogHelper();
     }
 
     /**
@@ -35,11 +49,12 @@ class AppNexusCampaignJob extends AppNexusBaseJob
             $response['code'] = 'malformedPayload';
             $response['message'] = 'The payload is malformed';
 
-            $this->dispatchError($response);
+            $this->dispatchError($this->logHelper, $response);
         }
 
-        $jobAction = $this->payload['body']['action'];
+        $this->logHelper->updateJobLog($this->payload['uuid'], $response['code'], $response['message'], 'running');
 
+        $jobAction = $this->payload['body']['action'];
         switch ($jobAction) {
             case 'syncAppNexusDomains':
                 $response = $this->syncAppNexusDomains($this->payload);
@@ -69,6 +84,9 @@ class AppNexusCampaignJob extends AppNexusBaseJob
                 break;
         }
 
+        $this->logHelper->updateJobLog($this->payload['uuid'], $response['code'], $response['message'], $response['status']);
+
+        // TODO: Do dump only on local env
         dump($response);
     }
 
@@ -135,7 +153,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
                     $response['code'] = $e->getCode();
                     $response['message'] = $e->getMessage();
 
-                    $this->dispatchError($response);
+                    $this->dispatchError($this->logHelper, $response);
                 }
             }
         }
@@ -298,7 +316,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
             $response['code'] = 'missingParameter';
             $response['message'] = 'Missing campaign ID parameter';
 
-            $this->dispatchError($response);
+            $this->dispatchError($this->logHelper, $response);
         }
 
         return intval($payload['body']['data']['campaignId']);
@@ -355,13 +373,13 @@ class AppNexusCampaignJob extends AppNexusBaseJob
         } catch (\Exception $e) {
             $response['code'] = $e->getCode();
             $response['message'] = $e->getMessage();
-            $this->dispatchError($response);
+            $this->dispatchError($this->logHelper, $response);
         }
 
         if (!$campaign) {
             $response['code'] = 'campaignNotFound';
             $response['message'] = "User $campaignId not found";
-            $this->dispatchError($response);
+            $this->dispatchError($this->logHelper, $response);
         }
 
         return $campaign;
@@ -405,7 +423,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
         } catch (\Exception $e) {
             $response['code'] = $e->getCode();
             $response['message'] = $e->getMessage();
-            $this->dispatchError($response);
+            $this->dispatchError($this->logHelper, $response);
         }
     }
 
@@ -424,7 +442,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
         if (!$user) {
             $response['code'] = 'userAdvertiserNotFound';
             $response['message'] = "User related to advertiser $advertiserId not found";
-            $this->dispatchError($response);
+            $this->dispatchError($this->logHelper, $response);
         }
 
         return !empty($user->appNexusAdvertiserID);

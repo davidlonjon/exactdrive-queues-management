@@ -60,12 +60,14 @@ abstract class AppNexusBaseJob implements ShouldQueue
      *
      * @return void
      */
-    public function dispatchError($response = array(), $action = 'delete', $die = true)
+    public function dispatchError($logHelper, $response = array(), $action = 'delete', $die = true)
     {
-        // TODO implement logging and or emailing
-        dump($response);
 
-        // TODO // Look if job can be released
+        $logHelper->updateJobLog($response['payload']['uuid'], $response['code'], $response['message'], $response['status']);
+
+        // TODO: Do dump only on local env
+        dump($response);
+        // TODO: Look if job can be released
         if ('delete' === $action) {
             $this->delete();
         }

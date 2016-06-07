@@ -2,11 +2,24 @@
 
 namespace App\Jobs;
 
+use App\Helpers\QueueJobsLogingHelpers as LogHelper;
 use Exactdrive\AppNexus;
 
 class AppNexusAdvertiserJob extends AppNexusBaseJob
 {
 
+    /**
+     * Log helper.
+     *
+     * @var object
+     */
+    private $logHelper;
+
+    /**
+     * Job payload.
+     *
+     * @var array
+     */
     private $payload;
 
     /**
@@ -17,6 +30,7 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
     public function __construct($payload)
     {
         $this->payload = $payload;
+        $this->logHelper = new LogHelper();
     }
 
     /**
@@ -35,11 +49,12 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
             $response['code'] = 'malformedPayload';
             $response['message'] = 'The payload is malformed';
 
-            $this->dispatchError($response);
+            $this->dispatchError($this->logHelper, $response);
         }
 
-        $jobAction = $this->payload['body']['action'];
+        $this->logHelper->updateJobLog($this->payload['uuid'], $response['code'], $response['message'], 'running');
 
+        $jobAction = $this->payload['body']['action'];
         switch ($jobAction) {
             case 'addAdvertiser':
                 $response = $this->addAdvertiser($this->payload);
@@ -57,6 +72,9 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
                 break;
         }
 
+        $this->logHelper->updateJobLog($this->payload['uuid'], $response['code'], $response['message'], $response['status']);
+
+        // TODO: Do dump only on local env
         dump($response);
     }
 
@@ -75,7 +93,7 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
             $response['code'] = 'missingParameter';
             $response['message'] = 'Missing user ID parameter';
 
-            $this->dispatchError($response);
+            $this->dispatchError($this->logHelper, $response);
         }
 
         $userId = intval($payload['body']['data']['userId']);
@@ -101,7 +119,7 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
             $response['code'] = 'AppNexusAdvertiserAlreadyAdded';
             $response['message'] = $message->error;
 
-            $this->dispatchError($response);
+            $this->dispatchError($this->logHelper, $response);
         }
 
         try {
@@ -117,7 +135,7 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
             $response['code'] = $e->getCode();
             $response['message'] = $e->getMessage();
 
-            $this->dispatchError($response);
+            $this->dispatchError($this->logHelper, $response);
         }
 
         $response['status'] = 'complete';
@@ -142,7 +160,7 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
             $response['code'] = 'missingParameter';
             $response['message'] = 'Missing user ID parameter';
 
-            $this->dispatchError($response);
+            $this->dispatchError($this->logHelper, $response);
         }
 
         $userId = intval($payload['body']['data']['userId']);
@@ -157,7 +175,7 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
             $response['code'] = 'AppNexusAdvertiserNotFound';
             $response['message'] = $message->error;
 
-            $this->dispatchError($response);
+            $this->dispatchError($this->logHelper, $response);
         }
 
         try {
@@ -170,7 +188,7 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
             $response['code'] = $e->getCode();
             $response['message'] = $e->getMessage();
 
-            $this->dispatchError($response);
+            $this->dispatchError($this->logHelper, $response);
         }
 
         $response['status'] = 'complete';
@@ -196,7 +214,7 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
             $response['code'] = 'missingParameter';
             $response['message'] = 'Missing user ID parameter';
 
-            $this->dispatchError($response);
+            $this->dispatchError($this->logHelper, $response);
         }
 
         $userId = intval($payload['body']['data']['userId']);
@@ -222,7 +240,7 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
             $response['code'] = 'AppNexusAdvertiserNotFound';
             $response['message'] = $message->error;
 
-            $this->dispatchError($response);
+            $this->dispatchError($this->logHelper, $response);
         }
 
         try {
@@ -235,7 +253,7 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
             $response['code'] = $e->getCode();
             $response['message'] = $e->getMessage();
 
-            $this->dispatchError($response);
+            $this->dispatchError($this->logHelper, $response);
         }
 
         $response['status'] = 'complete';
@@ -262,13 +280,13 @@ class AppNexusAdvertiserJob extends AppNexusBaseJob
         } catch (\Exception $e) {
             $response['code'] = $e->getCode();
             $response['message'] = $e->getMessage();
-            $this->dispatchError($response);
+            $this->dispatchError($this->logHelper, $response);
         }
 
         if (!$user) {
             $response['code'] = 'userNotFound';
             $response['message'] = "User $userId not found";
-            $this->dispatchError($response);
+            $this->dispatchError($this->logHelper, $response);
         }
 
         return $user;
