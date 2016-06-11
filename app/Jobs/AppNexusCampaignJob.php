@@ -229,6 +229,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
                 // Campaign geographical targeting profile
                 $data = $this->campaignHelper->getAppNexusProfileGeographyData($data, $countries, $regions, $demographicIds, $cityIds, $zipCodes);
 
+                // TODO
                 //
                 // Campaign Profile Inventory Targeting
                 //
@@ -238,12 +239,12 @@ class AppNexusCampaignJob extends AppNexusBaseJob
                 //         $data
                 //    );
                 // } elseif ($inventory->type == 'retargeting') {
-                //    $data = $campaign->getAppNexusProfileRetargetingData(
+                //    $data = $this->campaignHelper->getAppNexusProfileRetargetingData(
                 //        $inventory,
                 //        $data
                 //    );
                 // } elseif ($inventory->type == 'mobile') {
-                //    $data = $campaign->getAppNexusProfileCategoryData(
+                //    $data = $this->campaignHelper->getAppNexusProfileCategoryData(
                 //        $inventory,
                 //        $data
                 //    );
@@ -253,7 +254,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
                 //        'tablet'
                 //    );
                 // } elseif ($inventory->type == 'facebook') {
-                //    $data = $campaign->getAppNexusProfileFacebookData(
+                //    $data = $this->campaignHelper->getAppNexusProfileFacebookData(
                 //        $inventory,
                 //        $data
                 //    );

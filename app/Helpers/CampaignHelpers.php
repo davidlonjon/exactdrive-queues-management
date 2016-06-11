@@ -334,7 +334,7 @@ class CampaignHelpers
     // TODO
     public function retargetingPixels($deleted = false)
     {
-        // Todo
+        // TODO
         // $pixels = $pixelTable->fetchAllRetargetingPixels($this->row->id, $deleted);
         if (count($pixels) == 0) {
             return null;
@@ -343,6 +343,12 @@ class CampaignHelpers
                 return new AppNexus\Segment($pixel);
             }, iterator_to_array($pixels));
         }
+    }
+
+    // TODO
+    public function getAppNexusProfileRetargetingData($inventory, $data)
+    {
+
     }
 
     // TODO
