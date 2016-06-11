@@ -138,6 +138,20 @@ class CampaignHelpers
     }
 
     /**
+     * Get campaign inventories.
+     *
+     * @param  int $campaignId Campaign id
+     *
+     * @return array             Campaign inventories
+     */
+    public function getCampaignInventories($campaignId)
+    {
+        return \DB::table('inventories')
+            ->where('campaignId', $campaignId)
+            ->get();
+    }
+
+    /**
      * Get campaign frequency
      *
      * @param  object $campaign Campaign

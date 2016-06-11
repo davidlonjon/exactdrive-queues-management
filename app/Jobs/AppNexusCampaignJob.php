@@ -8,6 +8,12 @@ use Exactdrive\AppNexus;
 
 class AppNexusCampaignJob extends AppNexusBaseJob
 {
+    /**
+     * Job payload.
+     *
+     * @var array
+     */
+    private $payload;
 
     /**
      * Log helper.
@@ -17,11 +23,11 @@ class AppNexusCampaignJob extends AppNexusBaseJob
     private $logHelper;
 
     /**
-     * Job payload.
+     * Campaign helper.
      *
-     * @var array
+     * @var object
      */
-    private $payload;
+    private $campaignHelper;
 
     /**
      * Create a new job instance.
@@ -32,6 +38,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
     {
         $this->payload = $payload;
         $this->logHelper = new LogHelper();
+        $this->campaignHelper = new CampaignHelpers();
     }
 
     /**
@@ -105,7 +112,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
 
         $campaign = $this->getCampaign($campaignId);
 
-        $preChecksData = $this->campaignPreSyncChecks($campaign);
+        $preChecksData = $this->campaignPreSyncChecks($campaign, $this->campaignHelper);
         if ('failed' === $preChecksData['status'] && !empty($preChecksData['code'])) {
             $response = $preChecksData;
             return $response;
@@ -180,20 +187,18 @@ class AppNexusCampaignJob extends AppNexusBaseJob
 
         $campaign = $this->getCampaign($campaignId);
 
-        $preChecksData = $this->campaignPreSyncChecks($campaign);
+        $preChecksData = $this->campaignPreSyncChecks($campaign, $this->campaignHelper);
         if ('failed' === $preChecksData['status'] && !empty($preChecksData['code'])) {
             $response = $preChecksData;
             return $response;
         }
 
-        $campaignHelper = new CampaignHelpers();
-
-        $frequency = $campaignHelper->getCampaignFrequency($campaign);
-        $countries = $campaignHelper->getAppNexusCountryIds($campaign);
-        $regions = $campaignHelper->getAppNexusRegions($campaign);
-        $demographicIds = $campaignHelper->getAppNexusDemographicMarketAreaIds($campaign);
-        $cityIds = $campaignHelper->getAppNexusCityIds($campaign);
-        $zipCodes = $campaignHelper->getZipCodes($campaign);
+        $frequency = $this->campaignHelper->getCampaignFrequency($campaign);
+        $countries = $this->campaignHelper->getAppNexusCountryIds($campaign);
+        $regions = $this->campaignHelper->getAppNexusRegions($campaign);
+        $demographicIds = $this->campaignHelper->getAppNexusDemographicMarketAreaIds($campaign);
+        $cityIds = $this->campaignHelper->getAppNexusCityIds($campaign);
+        $zipCodes = $this->campaignHelper->getZipCodes($campaign);
 
         foreach ($preChecksData['data']['inventories'] as $inventory) {
             if ($inventory->cost > 0) {
@@ -224,16 +229,16 @@ class AppNexusCampaignJob extends AppNexusBaseJob
                 );
 
                 // Campaign frequency profile
-                $data = $campaignHelper->getAppNexusProfileFrequencyData($inventory, $data, $frequency);
+                $data = $this->campaignHelper->getAppNexusProfileFrequencyData($inventory, $data, $frequency);
 
                 // Campaign geographical targeting profile
-                $data = $campaignHelper->getAppNexusProfileGeographyData($data, $countries, $regions, $demographicIds, $cityIds, $zipCodes);
+                $data = $this->campaignHelper->getAppNexusProfileGeographyData($data, $countries, $regions, $demographicIds, $cityIds, $zipCodes);
 
                 //
                 // Campaign Profile Inventory Targeting
                 //
                 // if ($inventory->type == 'display') {
-                //     $data = $campaignHelper->getAppNexusProfileCategoryData(
+                //     $data = $this->campaignHelper->getAppNexusProfileCategoryData(
                 //         $inventory,
                 //         $data
                 //    );
@@ -332,10 +337,11 @@ class AppNexusCampaignJob extends AppNexusBaseJob
      * Campaign pre sync checks.
      *
      * @param  int $campaign Campaign id
+     * @param  object $campaignHelper Campaign helper
      *
      * @return array           Pre checks data
      */
-    private function campaignPreSyncChecks($campaign)
+    private function campaignPreSyncChecks($campaign, $campaignHelper)
     {
         $data = $this->createCoreResponse(array());
 
@@ -353,7 +359,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
             $data['message'] = "Invalid Campaign Status: $campaign->status";
         }
 
-        $inventories = $this->getCampaignInventories($campaign->id);
+        $inventories = $campaignHelper->getCampaignInventories($campaign->id);
         if (empty($inventories)) {
             $data['code'] = 'emptyInventories';
             $data['message'] = 'Empty inventories';
@@ -389,22 +395,6 @@ class AppNexusCampaignJob extends AppNexusBaseJob
         }
 
         return $campaign;
-    }
-
-    /**
-     * Get campaign inventories.
-     *
-     * @param  int $campaignId Campaign id
-     *
-     * @return object             Campaign inventories
-     */
-    private function getCampaignInventories($campaignId)
-    {
-        $inventories = \DB::table('inventories')
-            ->where('campaignId', $campaignId)
-            ->get();
-
-        return $inventories;
     }
 
     /**
