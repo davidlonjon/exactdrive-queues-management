@@ -153,16 +153,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
                     $AppNexusResponse = AppNexus\DomainListService::updateDomainList($campaign->{$appNexusDomainListId}, $data);
                 }
 
-                try {
-                    \DB::table('campaigns')
-                        ->where('id', $campaign->id)
-                        ->update($fieldsToUpdate);
-                } catch (Exception $e) {
-                    $response['code'] = $e->getCode();
-                    $response['message'] = $e->getMessage();
-
-                    $this->dispatchError($this->logHelper, $response);
-                }
+                $this->updateCampaignInDb($campaign, $fieldsToUpdate, $response);
             }
         }
 
@@ -459,5 +450,28 @@ class AppNexusCampaignJob extends AppNexusBaseJob
             array('active', 'inactive'),
             true
         );
+    }
+
+    /**
+     * Update campaign in database.
+     *
+     * @param  object $campaign       Campaign
+     * @param  array $fieldsToUpdate Campaign fields to update
+     * @param  array $response       response
+     *
+     * @return void
+     */
+    private function updateCampaignInDb($campaign, $fieldsToUpdate, $response)
+    {
+        try {
+            \DB::table('campaigns')
+                ->where('id', $campaign->id)
+                ->update($fieldsToUpdate);
+        } catch (Exception $e) {
+            $response['code'] = $e->getCode();
+            $response['message'] = $e->getMessage();
+
+            $this->dispatchError($this->logHelper, $response);
+        }
     }
 }
