@@ -234,14 +234,14 @@ class AppNexusCampaignJob extends AppNexusBaseJob
                 // Campaign geographical targeting profile
                 $data = $this->campaignHelper->getAppNexusProfileGeographyData($data, $countries, $regions, $demographicIds, $cityIds, $zipCodes);
 
-                //
-                // Campaign Profile Inventory Targeting
-                //
-                // if ($inventory->type == 'display') {
-                //     $data = $this->campaignHelper->getAppNexusProfileCategoryData(
-                //         $inventory,
-                //         $data
-                //    );
+            //
+            // Campaign Profile Inventory Targeting
+            //
+            // if ($inventory->type == 'display') {
+            //     $data = $this->campaignHelper->getAppNexusProfileCategoryData(
+            //         $inventory,
+            //         $data
+            //    );
             //    } elseif ($inventory->type == 'retargeting') {
             //        $data = $campaign->getAppNexusProfileRetargetingData(
             //            $inventory,
