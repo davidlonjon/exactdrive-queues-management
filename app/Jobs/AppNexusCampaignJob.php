@@ -301,7 +301,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
                //
                 if (empty($inventory->appNexusProfileId)) {
                     $AppNexusResponse = AppNexus\ProfileService::addProfile($user->appNexusAdvertiserID, $data);
-                    $inventory->appNexusProfileId = $AppNexusResponse->id;
+                    $fieldsToUpdate['appNexusProfileId'] = $AppNexusResponse->id;
                 } else {
                     $AppNexusResponse = AppNexus\ProfileService::updateProfile($inventory->appNexusProfileId, $user->appNexusAdvertiserID, $data);
                 }
