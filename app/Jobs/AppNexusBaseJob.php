@@ -65,8 +65,10 @@ abstract class AppNexusBaseJob implements ShouldQueue
 
         $logHelper->updateJobLog($response['payload']['uuid'], $response['code'], $response['message'], $response['status']);
 
-        // TODO: Do dump only on local env
+        if (app()->environment('local')) {
         dump($response);
+        }
+
         // TODO: Look if job can be released
         if ('delete' === $action) {
             $this->delete();
