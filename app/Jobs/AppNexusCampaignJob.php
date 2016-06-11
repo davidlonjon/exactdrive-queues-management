@@ -80,18 +80,22 @@ class AppNexusCampaignJob extends AppNexusBaseJob
                 $response = $this->syncAppNexusCampaignProfile($this->payload);
                 break;
 
+            // TODO: implement correctly syncAppNexusLineItem and its sub calls
             // case 'syncAppNexusLineItem':
             //     $response = $this->syncAppNexusLineItem($this->payload);
             //     break;
 
+            // TODO: implement correctly syncAppNexusCampaign and its sub calls
             // case 'syncAppNexusCampaign':
             //     $response = $this->syncAppNexusCampaign($this->payload);
             //     break;
 
+            // TODO: implement correctly syncStatus and its sub calls
             // case 'syncStatus':
             //     $response = $this->syncStatus($this->payload);
             //     break;
 
+            // TODO: implement correctly deleteCampaign and its sub calls
             // case 'deleteCampaign':
             //     $response = $this->deleteCampaign($this->payload);
             //     break;
@@ -314,6 +318,70 @@ class AppNexusCampaignJob extends AppNexusBaseJob
         $response['status'] = 'complete';
         $response['code'] = 'jobCompleted';
         $response['message'] = 'AppNexus campaign profile synced';
+        return $response;
+    }
+
+    // TODO: Implement correctly
+    /**
+     * Sync App Nexus Line Item.
+     *
+     * @param  array  $payload Job payload
+     *
+     * @return Array          Job response
+     */
+    public function syncAppNexusLineItem($payload = array())
+    {
+        $response = $this->createCoreResponse($payload);
+
+        $campaignId = $this->sanitizeCampaignIdParam($payload);
+
+        $campaign = $this->getCampaign($campaignId);
+
+        $preChecksData = $this->campaignPreSyncChecks($campaign, $this->campaignHelper);
+        if ('failed' === $preChecksData['status'] && !empty($preChecksData['code'])) {
+            $response = $preChecksData;
+            return $response;
+        }
+
+        $user = $preChecksData['data']['user'];
+        $response['data'] = array();
+
+        foreach ($preChecksData['data']['inventories'] as $inventory) {
+            $fieldsToUpdate = array(
+                    'lastSyncedWithAppNexus' => date('Y-m-d H:i:s')
+            );
+
+            if (!empty($inventory->appNexusLineItemId) && 0 <= $inventory->cost) {
+                // If the campaign is active but has no cost, set campaign
+                // and line item status in AppNexus to inactive.
+                if ($this->status == 'active') {
+                    $data = new stdClass();
+                    $data->state = 'inactive';
+
+                    $AppNexusResponse = AppNexus\LineItemService::updateLineItem($inventory->appNexusLineItemId, $user->appNexusAdvertiserID, $data);
+                }
+
+                continue;
+            }
+
+            if (0 < $inventory->cost) {
+                $data = $this->inventoryHelper->getAppNexusLineItemData($inventory, $campaign);
+
+                if (empty($inventory->appNexusLineItemId)) {
+                    $AppNexusResponse = AppNexus\LineItemService::addLineItem($user->appNexusAdvertiserId, $data);
+                    $fieldsToUpdate['appNexusLineItemId'] = $AppNexusResponse->id;
+                } else {
+                    $AppNexusResponse = AppNexus\LineItemService::updateLineItem($inventory->appNexusLineItemId, $user->appNexusAdvertiserID, $data);
+                }
+
+                $this->updateInventoryInDb($inventory, $fieldsToUpdate, $response);
+                array_push($response['data'], $inventory);
+            }
+        }
+
+        $response['status'] = 'complete';
+        $response['code'] = 'jobCompleted';
+        $response['message'] = 'AppNexus campaign domains synced';
         return $response;
     }
 

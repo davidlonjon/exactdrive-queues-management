@@ -397,4 +397,188 @@ class CampaignHelpers
 
     //     return $data;
     // }
+    //
+
+    /**
+     * Get campaign start date.
+     *
+     * @param  object $campaign Campaign
+     *
+     * @return string           Campaign start date
+     */
+    public function getStartDate($campaign)
+    {
+      if (empty($campaign->startDate)) {
+        $date = null;
+      } elseif (empty($campaign->startTime)) {
+        $date = "$campaign->startDate 00:00:00";
+      } else {
+        $date = "$campaign->startDate $campaign->startTime";
+      }
+
+      return $date;
+    }
+
+    /**
+     * Get campaign end date.
+     *
+     * @param  object $campaign Campaign
+     *
+     * @return string           Campaign end date
+     */
+    public function getEndDate($campaign)
+    {
+      if (empty($campaign->endDate) || $campaign->endDate == '0000-00-00') {
+        $date = null;
+      } elseif (empty($campaign->endTime)) {
+        $date = "$campaign->endDate 00:00:00";
+      } else {
+        $date = "$campaign->endDate $campaign->endTime";
+      }
+
+      return $date;
+    }
+
+    /**
+    * Returns true if the campaign does not have any associated columns marked
+    * as 'dirty' in the Logs table.
+    *
+    * @param  object $campaign Campaign
+    *
+    * @return bool
+    */
+    public function isClean($campaign)
+    {
+        return !$campaign->isDirty();
+    }
+
+
+    // TODO: Implement correctly
+    public function getAppNexusPacing($inventory, $data)
+    {
+        if ( empty($inventory) ) return null;
+
+        if (empty($data)) {
+            $data = new stdClass();
+        }
+
+        $data->enable_pacing = false;
+        $data->lifetime_pacing = false;
+        $data->daily_budget_imps = null;
+        $data->daily_budget = null;
+        $data->lifetime_budget_imps = null;
+
+        if ($inventory->cost > 0.0) {
+
+            // Set revenue pacing
+
+            $data->lifetime_budget = (float) $inventory->cost;
+
+            if ($inventory->costDailyBudget > 0.0) {
+                $data->daily_budget = (float) $inventory->costDailyBudget;
+
+                if ($inventory->costDailyBudgetPace) {
+                    $data->enable_pacing = true;
+                }
+            } else {
+                $data->enable_pacing = true;
+
+                if ($data->end_date !== null) {
+                    $data->lifetime_pacing = true;
+                }
+            }
+
+            // // Note: This is code to sync the impressions lifetime budget and
+            // //       pacing. This code is commented out since we are focusing on
+            // //       revenue budgeting and pacing.
+            //
+            // // Set impression pacing
+            //
+            // if ($inventory->impressionsDailyBudget > 0) {
+            //     $data->daily_budget_imps = (int) $inventory->impressionsDailyBudget;
+            //     $data->enable_pacing = true;
+            //
+            //     if ($data->end_date != null) {
+            //         $data->lifetime_pacing = true;
+            //     }
+            // }
+
+        }
+
+        return $data;
+    }
+
+    // TODO: Implement correctly
+    public function getAppNexusPerformanceGoals($inventory, $data)
+    {
+        if ( empty($inventory) ) return null;
+
+        if (empty($data)) {
+            $data = new stdClass();
+        }
+
+        switch ($this->goals) {
+            case 'cpa':
+                $pixel = $this->syncConversionPixelToAppNexus();
+                $appNexusData = $pixel->getAppNexusData();
+
+                $data->goal_type = 'cpa';
+                $data->pixels = array(
+                    (object) array(
+                        'id' => $appNexusData->id,
+                        'state' => $data->state
+                    )
+                );
+                $data->goal_pixels = array(
+                    (object) array(
+                        'id' => $appNexusData->id,
+                        'state' => $data->state,
+                        'post_click_goal_target' => (double) $this->postClickCPA,
+                        'post_view_goal_target' => (double) $this->postViewCPA
+                    )
+                );
+
+                // Unset CPC and CTR goal settings
+                $data->valuation = null;
+
+                break;
+
+            case 'cpc':
+                $data->goal_type = 'cpc';
+                $data->valuation = (object) array(
+                    'goal_target' => (double) $this->cpc
+                );
+
+                // Unset CPA goal settings
+                $data->goal_pixels = null;
+                $data->pixels = null;
+
+                break;
+
+            case 'ctr':
+                $ctr_value = (double) $this->ctr / 100.00;
+
+                if (!empty($ctr_value)) {
+                    $data->goal_type = 'ctr';
+                    $data->valuation = (object) array(
+                        'goal_target' => $ctr_value
+                    );
+                }
+
+                // Unset CPA goal settings
+                $data->goal_pixels = null;
+                $data->pixels = null;
+
+                break;
+
+            default:
+                $data->goal_type = 'none';
+                $data->valuation = null;
+                $data->goal_pixels = null;
+                $data->pixels = null;
+                break;
+        }
+
+        return $data;
+    }
 }
