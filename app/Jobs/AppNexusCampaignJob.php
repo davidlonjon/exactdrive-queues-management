@@ -385,6 +385,191 @@ class AppNexusCampaignJob extends AppNexusBaseJob
         return $response;
     }
 
+    // TODO: To re-implement
+    public function syncAppNexusCampaign()
+    {
+        $inventories          = $this->fetchInventories();
+        $appNexusAdvertiserId = $this->fetchAppNexusAdvertiserId();
+        $apiCalls             = array();
+
+        // If no inventories or if ANX Advertising ID is blank, don't sync
+        if (empty($inventories) || empty($appNexusAdvertiserId)) {
+            return null;
+        }
+
+        foreach ($inventories as $inventory) {
+
+            if ( !empty($inventory->appNexusCampaignId)
+                 && $inventory->cost <= 0 ) {
+
+                // If the campaign is active but has no cost, set campaign
+                // and line item status in AppNexus to inactive.
+                if ($this->status == 'active') {
+                    $data = new stdClass();
+                    $data->state = 'inactive';
+
+                    $response = AppNexus_CampaignService::updateCampaign(
+                        $inventory->appNexusCampaignId,
+                        $appNexusAdvertiserId,
+                        $data
+                    );
+
+                    $apiCalls['data'][] = json_encode($data);
+                    $apiCalls['response'][] = $response->toJson();
+                }
+
+                continue;
+            }
+
+            if ( $inventory->cost > 0 ) {
+
+                $data = $this->getAppNexusCampaignData($inventory);
+
+                if (!empty($inventory->appNexusProfileId)) {
+                    $data->profile_id = $inventory->appNexusProfileId;
+                }
+
+                if (!empty($inventory->appNexusLineItemId)) {
+                    $data->line_item_id = $inventory->appNexusLineItemId;
+                }
+
+                if (empty($inventory->appNexusCampaignId)) {
+
+                    $response =
+                        AppNexus_CampaignService::addCampaign(
+                            $appNexusAdvertiserId,
+                            $data
+                        );
+
+                    $inventory->appNexusCampaignId = $response->id;
+                    $inventory->lastSyncedWithAppNexus = date("Y-m-d H:i:s");
+                    $inventory->save();
+
+                } else {
+
+                    $response =
+                        AppNexus_CampaignService::updateCampaign(
+                            $inventory->appNexusCampaignId,
+                            $appNexusAdvertiserId,
+                            $data
+                        );
+
+                    $inventory->lastSyncedWithAppNexus = date("Y-m-d H:i:s");
+                    $inventory->save();
+
+                }
+
+                $apiCalls['data'][] = json_encode($data);
+                $apiCalls['response'][] = $response->toJson();
+
+            }
+
+        }
+
+        return $apiCalls;
+
+    }
+
+    // TODO: To re-implement
+    public function syncAppNexusStatus()
+    {
+        $appNexusAdvertiserId = $this->fetchAppNexusAdvertiserId();
+
+        $inventories          = $this->fetchInventories();
+        $appNexusAdvertiserId = $this->fetchAppNexusAdvertiserId();
+        $apiCalls             = array();
+
+        // If no inventories or if ANX Advertising ID is blank, don't sync
+        if (empty($inventories) || empty($appNexusAdvertiserId)) {
+            return null;
+        }
+
+        foreach ($inventories as $inventory) {
+
+            $data = new stdClass();
+            $data->state = $this->status;
+
+            if (!empty($inventory->appNexusLineItemId)) {
+                $response = AppNexus_LineItemService::updateLineItem(
+                    $inventory->appNexusLineItemId,
+                    $appNexusAdvertiserId,
+                    $data
+                );
+
+                $inventory->lastSyncedWithAppNexus = date("Y-m-d H:i:s");
+
+                $apiCalls['data'][] = json_encode($data);
+                $apiCalls['response'][] = $response->toJson();
+            }
+
+            if (!empty($inventory->appNexusCampaignId)) {
+                $response = AppNexus_CampaignService::updateCampaign(
+                    $inventory->appNexusCampaignId,
+                    $appNexusAdvertiserId,
+                    $data
+                );
+                $inventory->lastSyncedWithAppNexus = date("Y-m-d H:i:s");
+                $apiCalls['data'][] = json_encode($data);
+                $apiCalls['response'][] = $response->toJson();
+            }
+
+            $inventory->save();
+
+            return $apiCalls;
+        }
+    }
+
+    // TODO: To re-implement
+    public function deleteFromAppNexus()
+    {
+        $inventories = $this->fetchInventories();
+        $advertiser  = $this->fetchAdvertiser();
+        $apiCalls    = array();
+
+        // If no inventories, there's nothing to do here.
+        if (empty($inventories)) {
+            return null;
+        }
+
+        // Get the AppNexus Advertiser ID from User
+        $usersTable = new Zend_Db_Table('users');
+        $user = $usersTable->find($advertiser->userId)->current();
+        $appNexusAdvertiserId = $user->appNexusAdvertiserID;
+
+        foreach ($inventories as $inventory) {
+
+            // Deleting a Line Item will delete all associated campaigns
+            if (!empty($inventory->appNexusLineItemId)) {
+                $response = AppNexus_LineItemService::deleteLineItem(
+                    $inventory->appNexusLineItemId,
+                    $appNexusAdvertiserId
+                );
+
+                $apiCalls['data'][] = json_encode($inventory->appNexusLineItemId);
+                $apiCalls['response'][] = $response;
+            }
+
+            if (!empty($inventory->appNexusProfileId)) {
+                $response = AppNexus_ProfileService::deleteProfile(
+                    $inventory->appNexusProfileId,
+                    $appNexusAdvertiserId
+                );
+
+                $apiCalls['data'][] = json_encode($inventory->appNexusLineItemId);
+                $apiCalls['response'][] = $response;
+            }
+
+            $inventory->appNexusCampaignId = null;
+            $inventory->appNexusLineItemId = null;
+            $inventory->appNexusProfileId = null;
+            $inventory->save();
+
+        }
+
+        return $apiCalls;
+
+    }
+
     /**
      * Sanitize campaign id param
      *
