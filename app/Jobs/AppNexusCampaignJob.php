@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Helpers\CampaignHelpers;
+use App\Helpers\InventoryHelpers;
 use App\Helpers\QueueJobsLogingHelpers as LogHelper;
 use Exactdrive\AppNexus;
 
@@ -30,6 +31,13 @@ class AppNexusCampaignJob extends AppNexusBaseJob
     private $campaignHelper;
 
     /**
+     * Inventory helper.
+     *
+     * @var object
+     */
+    private $inventoryHelper;
+
+    /**
      * Create a new job instance.
      *
      * @return void
@@ -39,6 +47,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
         $this->payload = $payload;
         $this->logHelper = new LogHelper();
         $this->campaignHelper = new CampaignHelpers();
+        $this->inventoryHelper = new InventoryHelpers();
     }
 
     /**
