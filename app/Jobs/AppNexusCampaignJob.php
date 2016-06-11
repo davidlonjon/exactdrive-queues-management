@@ -105,9 +105,9 @@ class AppNexusCampaignJob extends AppNexusBaseJob
 
         $campaign = $this->getCampaign($campaignId);
 
-        $data = $this->campaignPreSyncChecks($campaign);
-        if ('failed' === $data['status'] && !empty($data['code'])) {
-            $response = $data;
+        $preChecksData = $this->campaignPreSyncChecks($campaign);
+        if ('failed' === $preChecksData['status'] && !empty($preChecksData['code'])) {
+            $response = $preChecksData;
             return $response;
         }
 
