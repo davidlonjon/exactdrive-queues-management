@@ -94,8 +94,8 @@ class AppNexusCampaignJob extends AppNexusBaseJob
         $this->logHelper->updateJobLog($this->payload['uuid'], $response['code'], $response['message'], $response['status']);
 
         if (app()->environment('local')) {
-        dump($response);
-    }
+            dump($response);
+        }
     }
 
     /**
