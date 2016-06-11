@@ -12,11 +12,12 @@ class CampaignHelpers
      *
      * @param  object $inventory  Inventory
      * @param  object $data       AppNexus sync data
-     * @param  string $campaignId Campaign id
+     * @param  string $frequency Campaign frequency
      *
      * @return object             AppNexus sync data
      */
-    public function getAppNexusProfileFrequencyData($inventory, $data, $campaignId) {
+    public function getAppNexusProfileFrequencyData($inventory, $data, $frequency)
+    {
 
         if (empty($inventory)) {
             return null;
@@ -25,11 +26,6 @@ class CampaignHelpers
         if (empty($data)) {
             $data = new \stdClass();
         }
-
-        // TODO Implement query caching
-        $frequency = \DB::table('frequencies')
-            ->where('campaignId', $campaignId)
-            ->first();
 
         if (!empty($frequency) && $frequency->applyState == 'enabled') {
 
@@ -141,6 +137,20 @@ class CampaignHelpers
         }
 
         return $data;
+    }
+
+    /**
+     * Get campaign frequency
+     *
+     * @param  object $campaign Campaign
+     *
+     * @return array           Frequency
+     */
+    public function getCampaignFrequency($campaign)
+    {
+        return \DB::table('frequencies')
+            ->where('campaignId', $campaign->id)
+            ->first();
     }
 
     /**
