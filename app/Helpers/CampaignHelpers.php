@@ -69,21 +69,19 @@ class CampaignHelpers
      * Get AppNexus campaign geographical targeting profile
      *
      * @param  object $data     AppNexus sync data
-     * @param  object $campaign Campaign
+     * @param  array $countries      Campaign countries
+     * @param  array $regions        Campaign regions
+     * @param  array $demographicIds Campaign demographic ids
+     * @param  array $cityIds        Campaign city ids
+     * @param  array $zipCodes       Campaign zip codes
      *
      * @return data           AppNexus sync data
      */
-    public function getAppNexusProfileGeographyData($data, $campaign)
+    public function getAppNexusProfileGeographyData($data, $countries, $regions, $demographicIds, $cityIds, $zipCodes)
     {
         if (empty($data)) {
             $data = new stdClass();
         }
-
-        $countries = $this->getAppNexusCountryIds($campaign);
-        $regions = $this->getAppNexusRegions($campaign);
-        $demographicIds = $this->getAppNexusDemographicMarketAreaIds($campaign);
-        $cityIds = $this->getAppNexusCityIds($campaign);
-        $zipCodes = $this->getZipCodes($campaign);
 
         // Add Country Targets
         // Default: US
@@ -162,7 +160,6 @@ class CampaignHelpers
      */
     public function getAppNexusCountryIds($campaign)
     {
-        // TODO Implement query caching
         return \DB::table('countries')
             ->whereIn('id', explode(',', $campaign->countries))
             ->lists('appNexusCountryId');
@@ -177,7 +174,6 @@ class CampaignHelpers
      */
     public function getAppNexusRegions($campaign)
     {
-        // TODO Implement query caching
         return \DB::table('states')
             ->whereIn('id', explode(',', $campaign->states))
             ->lists('appNexusStateId');
@@ -192,7 +188,6 @@ class CampaignHelpers
      */
     public function getAppNexusDemographicMarketAreaIds($campaign)
     {
-        // TODO Implement query caching
         return \DB::table('demographics')
             ->whereIn('id', explode(',', $campaign->demographicMarketArea))
             ->lists('appNexusDemographicAreaId');
@@ -207,7 +202,6 @@ class CampaignHelpers
      */
     public function getAppNexusCityIds($campaign)
     {
-        // TODO Implement query caching
         return \DB::table('cities')
             ->whereIn('id', explode(',', $campaign->cities))
             ->lists('appNexusCityId');

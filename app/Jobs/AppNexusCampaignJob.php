@@ -189,6 +189,11 @@ class AppNexusCampaignJob extends AppNexusBaseJob
         $campaignHelper = new CampaignHelpers();
 
         $frequency = $campaignHelper->getCampaignFrequency($campaign);
+        $countries = $campaignHelper->getAppNexusCountryIds($campaign);
+        $regions = $campaignHelper->getAppNexusRegions($campaign);
+        $demographicIds = $campaignHelper->getAppNexusDemographicMarketAreaIds($campaign);
+        $cityIds = $campaignHelper->getAppNexusCityIds($campaign);
+        $zipCodes = $campaignHelper->getZipCodes($campaign);
 
         foreach ($preChecksData['data']['inventories'] as $inventory) {
             if ($inventory->cost > 0) {
@@ -222,8 +227,7 @@ class AppNexusCampaignJob extends AppNexusBaseJob
                 $data = $campaignHelper->getAppNexusProfileFrequencyData($inventory, $data, $frequency);
 
                 // Campaign geographical targeting profile
-                $data = $campaignHelper->getAppNexusProfileGeographyData($data, $campaign);
-
+                $data = $campaignHelper->getAppNexusProfileGeographyData($data, $countries, $regions, $demographicIds, $cityIds, $zipCodes);
 
                 //
                 // Campaign Profile Inventory Targeting
