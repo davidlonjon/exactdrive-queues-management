@@ -8,7 +8,7 @@ class CampaignHelpers
 {
 
     /**
-     * Get AppNexus profile frequency data
+     * Get AppNexus profile frequency data.
      *
      * @param  object $inventory  Inventory
      * @param  object $data       AppNexus sync data
@@ -66,7 +66,7 @@ class CampaignHelpers
     }
 
     /**
-     * Get AppNexus campaign geographical targeting profile
+     * Get AppNexus campaign geographical targeting profile.
      *
      * @param  object $data     AppNexus sync data
      * @param  array $countries      Campaign countries
@@ -152,7 +152,7 @@ class CampaignHelpers
     }
 
     /**
-     * Get campaign frequency
+     * Get campaign frequency.
      *
      * @param  object $campaign Campaign
      *
@@ -194,7 +194,7 @@ class CampaignHelpers
     }
 
     /**
-     * Get AppNexus demographic market area
+     * Get AppNexus demographic market area.
      *
      * @param  object $campaign Campaign
      *
@@ -222,7 +222,7 @@ class CampaignHelpers
     }
 
     /**
-     * Get campaign zip codes
+     * Get campaign zip codes.
      *
      * @param  object $campaign Campaign
      *
@@ -247,7 +247,7 @@ class CampaignHelpers
     }
 
     /**
-     * Get AppNexus category profile
+     * Get AppNexus category profile.
      *
      * @param  object $inventory Inventory
      * @param  object $data      AppNexus Sync data
@@ -296,6 +296,8 @@ class CampaignHelpers
         return $data;
     }
 
+
+    // TODO
     public function getAppNexusProfileRetargetingData($inventory, $data)
     {
         if (empty($inventory)) {
@@ -329,6 +331,7 @@ class CampaignHelpers
         return $data;
     }
 
+    // TODO
     public function retargetingPixels($deleted = false)
     {
         // Todo
@@ -342,7 +345,7 @@ class CampaignHelpers
         }
     }
 
-    // Todo
+    // TODO
     // public function getAppNexusProfileFacebookData($inventory, $data)
     // {
     //     if (empty($inventory)) {
