@@ -192,6 +192,9 @@ class AppNexusCampaignJob extends AppNexusBaseJob
         $cityIds = $this->campaignHelper->getAppNexusCityIds($campaign);
         $zipCodes = $this->campaignHelper->getZipCodes($campaign);
 
+        $user = $preChecksData['data']['user'];
+        $response['data'] = array();
+
         foreach ($preChecksData['data']['inventories'] as $inventory) {
             if ($inventory->cost > 0) {
                 //
@@ -279,30 +282,28 @@ class AppNexusCampaignJob extends AppNexusBaseJob
                 //    }
                 // }
 
-                //    //
-                //    // Sync Profile Data
-                //    //
+                $fieldsToUpdate = array(
+                        'lastSyncedWithAppNexus' => date('Y-m-d H:i:s')
+                );
 
-                //    if (empty($inventory->appNexusProfileId)) {
-                //        $AppNexusResponse = AppNexus_ProfileService::addProfile(
-                //            $appNexusAdvertiserId,
-                //            $data
-                //        );
-                //        $inventory->appNexusProfileId = $AppNexusResponse->id;
-                //    } else {
-                //        $AppNexusResponse = AppNexus_ProfileService::updateProfile(
-                //            $inventory->appNexusProfileId,
-                //            $appNexusAdvertiserId,
-                //            $data
-                //        );
-                //    }
+               //
+               // Sync Profile Data
+               //
+                if (empty($inventory->appNexusProfileId)) {
+                    $AppNexusResponse = AppNexus\ProfileService::addProfile($user->appNexusAdvertiserID, $data);
+                    $inventory->appNexusProfileId = $AppNexusResponse->id;
+                } else {
+                    $AppNexusResponse = AppNexus\ProfileService::updateProfile($inventory->appNexusProfileId, $user->appNexusAdvertiserID, $data);
+                }
+
+                $this->updateInventoryInDb($inventory, $fieldsToUpdate, $response);
+                array_push($response['data'], $inventory);
             }
         }
 
         $response['status'] = 'complete';
         $response['code'] = 'jobCompleted';
         $response['message'] = 'AppNexus campaign profile synced';
-        // $response['data'] = $campaign;
         return $response;
     }
 
@@ -466,6 +467,29 @@ class AppNexusCampaignJob extends AppNexusBaseJob
         try {
             \DB::table('campaigns')
                 ->where('id', $campaign->id)
+                ->update($fieldsToUpdate);
+        } catch (Exception $e) {
+            $response['code'] = $e->getCode();
+            $response['message'] = $e->getMessage();
+
+            $this->dispatchError($this->logHelper, $response);
+        }
+    }
+
+    /**
+     * Update inventory in database.
+     *
+     * @param  object $inventory       Campaign
+     * @param  array $fieldsToUpdate Campaign fields to update
+     * @param  array $response       response
+     *
+     * @return void
+     */
+    private function updateInventoryInDb($inventory, $fieldsToUpdate, $response)
+    {
+        try {
+            \DB::table('inventories')
+                ->where('id', $inventory->id)
                 ->update($fieldsToUpdate);
         } catch (Exception $e) {
             $response['code'] = $e->getCode();
