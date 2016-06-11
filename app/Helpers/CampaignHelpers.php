@@ -346,12 +346,6 @@ class CampaignHelpers
     }
 
     // TODO
-    public function getAppNexusProfileRetargetingData($inventory, $data)
-    {
-
-    }
-
-    // TODO
     // public function getAppNexusProfileFacebookData($inventory, $data)
     // {
     //     if (empty($inventory)) {
