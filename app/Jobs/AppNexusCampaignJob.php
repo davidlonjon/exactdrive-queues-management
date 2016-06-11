@@ -226,76 +226,76 @@ class AppNexusCampaignJob extends AppNexusBaseJob
                 // Campaign geographical targeting profile
                 $data = $this->campaignHelper->getAppNexusProfileGeographyData($data, $countries, $regions, $demographicIds, $cityIds, $zipCodes);
 
-            //
-            // Campaign Profile Inventory Targeting
-            //
-            // if ($inventory->type == 'display') {
-            //     $data = $this->campaignHelper->getAppNexusProfileCategoryData(
-            //         $inventory,
-            //         $data
-            //    );
-            //    } elseif ($inventory->type == 'retargeting') {
-            //        $data = $campaign->getAppNexusProfileRetargetingData(
-            //            $inventory,
-            //            $data
-            //        );
-            //    } elseif ($inventory->type == 'mobile') {
-            //        $data = $campaign->getAppNexusProfileCategoryData(
-            //            $inventory,
-            //            $data
-            //        );
-            //        $data->device_type_action = 'include';
-            //        $data->device_type_targets = array(
-            //            'phone',
-            //            'tablet'
-            //        );
-            //    } elseif ($inventory->type == 'facebook') {
-            //        $data = $campaign->getAppNexusProfileFacebookData(
-            //            $inventory,
-            //            $data
-            //        );
-            //    } elseif ($inventory->type == 'domain_inclusion') {
+                //
+                // Campaign Profile Inventory Targeting
+                //
+                // if ($inventory->type == 'display') {
+                //     $data = $this->campaignHelper->getAppNexusProfileCategoryData(
+                //         $inventory,
+                //         $data
+                //    );
+                // } elseif ($inventory->type == 'retargeting') {
+                //    $data = $campaign->getAppNexusProfileRetargetingData(
+                //        $inventory,
+                //        $data
+                //    );
+                // } elseif ($inventory->type == 'mobile') {
+                //    $data = $campaign->getAppNexusProfileCategoryData(
+                //        $inventory,
+                //        $data
+                //    );
+                //    $data->device_type_action = 'include';
+                //    $data->device_type_targets = array(
+                //        'phone',
+                //        'tablet'
+                //    );
+                // } elseif ($inventory->type == 'facebook') {
+                //    $data = $campaign->getAppNexusProfileFacebookData(
+                //        $inventory,
+                //        $data
+                //    );
+                // } elseif ($inventory->type == 'domain_inclusion') {
 
-            //        // If inventoryUrlFilter is NULL or 'advertise', include
-            //        // domain list. Otherwise, exclude domain list.
-            //        if ($campaign->inventoryUrlFilter == 'exclude') {
-            //            if (!empty($campaign->appNexusExcludeDomainListId)) {
-            //                $data->domain_list_action = 'exclude';
-            //                $data->domain_list_targets = array(
-            //                    (object) array(
-            //                        'id' => (int) $campaign->appNexusExcludeDomainListId
-            //                    )
-            //                );
-            //            }
-            //        } else {
-            //            if (!empty($campaign->appNexusIncludeDomainListId)) {
-            //                $data->domain_list_action = 'include';
-            //                $data->domain_list_targets = array(
-            //                    (object) array(
-            //                        'id' => (int) $this->appNexusIncludeDomainListId
-            //                    )
-            //                );
-            //            }
-            //        }
-            //    }
+                //    // If inventoryUrlFilter is NULL or 'advertise', include
+                //    // domain list. Otherwise, exclude domain list.
+                //    if ($campaign->inventoryUrlFilter == 'exclude') {
+                //        if (!empty($campaign->appNexusExcludeDomainListId)) {
+                //            $data->domain_list_action = 'exclude';
+                //            $data->domain_list_targets = array(
+                //                (object) array(
+                //                    'id' => (int) $campaign->appNexusExcludeDomainListId
+                //                )
+                //            );
+                //        }
+                //    } else {
+                //        if (!empty($campaign->appNexusIncludeDomainListId)) {
+                //            $data->domain_list_action = 'include';
+                //            $data->domain_list_targets = array(
+                //                (object) array(
+                //                    'id' => (int) $this->appNexusIncludeDomainListId
+                //                )
+                //            );
+                //        }
+                //    }
+                // }
 
-            //    //
-            //    // Sync Profile Data
-            //    //
+                //    //
+                //    // Sync Profile Data
+                //    //
 
-            //    if (empty($inventory->appNexusProfileId)) {
-            //        $AppNexusResponse = AppNexus_ProfileService::addProfile(
-            //            $appNexusAdvertiserId,
-            //            $data
-            //        );
-            //        $inventory->appNexusProfileId = $AppNexusResponse->id;
-            //    } else {
-            //        $AppNexusResponse = AppNexus_ProfileService::updateProfile(
-            //            $inventory->appNexusProfileId,
-            //            $appNexusAdvertiserId,
-            //            $data
-            //        );
-            //    }
+                //    if (empty($inventory->appNexusProfileId)) {
+                //        $AppNexusResponse = AppNexus_ProfileService::addProfile(
+                //            $appNexusAdvertiserId,
+                //            $data
+                //        );
+                //        $inventory->appNexusProfileId = $AppNexusResponse->id;
+                //    } else {
+                //        $AppNexusResponse = AppNexus_ProfileService::updateProfile(
+                //            $inventory->appNexusProfileId,
+                //            $appNexusAdvertiserId,
+                //            $data
+                //        );
+                //    }
             }
         }
 
